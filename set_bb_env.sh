@@ -200,6 +200,10 @@ echo "" >> ${BUILDDIR}/conf/bblayers.conf
 echo "# Advantech Yocto Project Release layers" >> ${BUILDDIR}/conf/bblayers.conf
 echo "BBLAYERS += \"\${WORKSPACE}/layers/meta-qcom-advantech \"" >> ${BUILDDIR}/conf/bblayers.conf
 
+echo "" >> ${BUILDDIR}/conf/bblayers.conf
+echo "# Advantech Yocto Project Release layers" >> ${BUILDDIR}/conf/bblayers.conf
+echo "BBLAYERS += \"\${WORKSPACE}/layers/meta-qcom-qim-product-sdk \"" >> ${BUILDDIR}/conf/bblayers.conf
+
 # If EXTRALAYERS are avilable update them
 if [ -n "${EXTRALAYERS}" ]; then
     earr=($EXTRALAYERS)
