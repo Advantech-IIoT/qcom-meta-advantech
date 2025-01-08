@@ -178,6 +178,19 @@ if [ -z "${SDKMACHINE}" ]; then
     SDKMACHINE='x86_64'
 fi
 
+# use qualcomm ID for meta-qcom-extras
+if [ -z "${CUST_ID}" ]; then
+    CUST_ID="213195"
+fi
+# setup firmware path
+if [ -z "${FWZIP_PATH}" ]; then
+    FWZIP_PATH="$WS/qualcomm-linux-spf/qualcomm-linux-spf-1-0_ap_standard_oem_nm-qimpsdk/QCM6490.LE.1.0/common/build/ufs/bin"
+fi
+# setup extras layers
+if [ -z "${EXTRALAYERS}" ]; then
+    EXTRALAYERS="meta-qcom-extras meta-qcom-qim-product-sdk"
+fi
+
 BUILDDIR="${WS}/build-$DISTRO"
 
 if [ $# -eq 1 ]; then
@@ -199,10 +212,6 @@ fi
 echo "" >> ${BUILDDIR}/conf/bblayers.conf
 echo "# Advantech Yocto Project Release layers" >> ${BUILDDIR}/conf/bblayers.conf
 echo "BBLAYERS += \"\${WORKSPACE}/layers/meta-qcom-advantech \"" >> ${BUILDDIR}/conf/bblayers.conf
-
-echo "" >> ${BUILDDIR}/conf/bblayers.conf
-echo "# Advantech Yocto Project Release layers" >> ${BUILDDIR}/conf/bblayers.conf
-echo "BBLAYERS += \"\${WORKSPACE}/layers/meta-qcom-qim-product-sdk \"" >> ${BUILDDIR}/conf/bblayers.conf
 
 # If EXTRALAYERS are avilable update them
 if [ -n "${EXTRALAYERS}" ]; then
