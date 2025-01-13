@@ -1,0 +1,21 @@
+From b74f2f76a2f95117588ec6e8b406ebce3b618573 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:58:51 +0800
+Subject: [PATCH 29/35] add the CONFIG_USB_NET_CDC_MBIM defconfig
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 0bb39ef90363..517072ad7111 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -52,3 +52,4 @@ CONFIG_RTC_DRV_RV8803=y
+ CONFIG_EEPROM_AT24=y
+ CONFIG_SND_SOC_SGTL5000=m
+ CONFIG_USB_NET_QMI_WWAN=m
++CONFIG_USB_NET_CDC_MBIM=m
+-- 
+2.47.0
+

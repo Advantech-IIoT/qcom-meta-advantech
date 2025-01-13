@@ -1,0 +1,349 @@
+From fe21fdcd8918c8a33efb574ea2a9513be649141a Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 28 Sep 2024 07:49:25 +0800
+Subject: [PATCH 25/35] configure the hdmi and sgtl5000 audio dts
+
+---
+ arch/arm64/boot/dts/qcom/qcm6490.dtsi         |  13 +-
+ .../qcs6490-addons-rb3gen2-vision-mezz.dts    | 179 +++++++++++++++++-
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts  |   4 +-
+ arch/arm64/boot/dts/qcom/sc7280.dtsi          |  20 ++
+ 4 files changed, 205 insertions(+), 11 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcm6490.dtsi b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
+index c0711a1310a5..537c38510414 100644
+--- a/arch/arm64/boot/dts/qcom/qcm6490.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
+@@ -245,6 +245,8 @@ &lpass_hm {
+ &lpass_rx_macro {
+ 	/delete-property/ power-domains;
+ 	/delete-property/ power-domain-names;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
+ 	clocks = <&q6prmcc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 		 <&q6prmcc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 		 <&q6prmcc LPASS_CLK_ID_RX_CORE_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+@@ -256,11 +258,10 @@ &lpass_rx_macro {
+ 
+ 	qcom,rx_mclk_mode_muxsel = <0x033240D8>;
+ 
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &lpass_tlmm {
+-	status = "disabled";
+ 	clocks = <&q6prmcc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 		 <&q6prmcc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+ 	clock-names = "core", "audio";
+@@ -279,6 +280,8 @@ lpass_dmic45_data: dmic45-data-state {
+ &lpass_tx_macro {
+ 	/delete-property/ power-domains;
+ 	/delete-property/ power-domain-names;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
+ 	clocks = <&q6prmcc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 		 <&q6prmcc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 		 <&q6prmcc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+@@ -286,7 +289,7 @@ &lpass_tx_macro {
+ 		 <&lpass_va_macro>;
+ 	clock-names = "mclk", "npl", "macro", "dcodec", "fsgen";
+ 
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &lpass_va_macro {
+@@ -302,7 +305,7 @@ &lpass_va_macro {
+ 		    <&lpass_dmic23_clk>, <&lpass_dmic23_data>,
+ 		    <&lpass_dmic45_clk>, <&lpass_dmic45_data>;
+ 
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &lpass_wsa_macro {
+@@ -315,7 +318,7 @@ &lpass_wsa_macro {
+ 		 <&lpass_va_macro>;
+ 	clock-names = "mclk", "npl", "macro", "dcodec", "fsgen";
+ 
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &remoteproc_wpss {
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+index 488bc6a5e209..c4da6044ed79 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+@@ -23,14 +23,20 @@ &q6apmbedai {
+ 
+ &sound {
+ 	compatible = "qcom,qcm6490-sndcard";
+-	model = "qcm6490-rb3-vision-snd-card";
++	model = "qcm6490-rom2860-snd-card";
+ 
+ 	pinctrl-names = "default", "stub_aif1_active", "stub_aif1_sleep";
+ 	pinctrl-0 = <&mi2s0_data0_sleep>, <&mi2s0_data1_sleep>, <&mi2s0_mclk_sleep>,
+-		    <&mi2s0_sclk_sleep>,<&mi2s0_ws_sleep>;
+-	pinctrl-1 = <&mi2s0_data0>, <&mi2s0_data1>, <&mi2s0_mclk>, <&mi2s0_sclk>, <&mi2s0_ws>;
++		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>,
++			<&mi2s3_data0_sleep>, <&mi2s3_data1_sleep>, <&mi2s3_sclk_sleep>, <&mi2s3_ws_sleep>,
++			<&mi2s1_data0_sleep> , <&mi2s1_sclk_sleep>, <&mi2s1_ws_sleep>;
++	pinctrl-1 = <&mi2s0_data0>, <&mi2s0_data1>, <&mi2s0_mclk>, <&mi2s0_sclk>, <&mi2s0_ws>,
++			<&mi2s3_data0>, <&mi2s3_data1>, <&mi2s3_sclk>, <&mi2s3_ws>,
++			<&mi2s1_data0> , <&mi2s1_sclk>, <&mi2s1_ws>;
+ 	pinctrl-2 = <&mi2s0_data0_sleep>, <&mi2s0_data1_sleep>, <&mi2s0_mclk_sleep>,
+-		    <&mi2s0_sclk_sleep>,<&mi2s0_ws_sleep>;
++		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>,
++			<&mi2s3_data0_sleep>, <&mi2s3_data1_sleep>, <&mi2s3_sclk_sleep>, <&mi2s3_ws_sleep>,
++			<&mi2s1_data0_sleep> , <&mi2s1_sclk_sleep>, <&mi2s1_ws_sleep>;
+ 
+ 	mi2s-capture-dai-link {
+ 		link-name = "MI2S-LPAIF-TX-PRIMARY";
+@@ -56,6 +62,54 @@ codec {
+ 		};
+ 	};
+ 
++	mi2s1-capture-dai-link {
++		link-name = "MI2S-LPAIF-TX-SECONDARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai SECONDARY_MI2S_TX>;
++		};
++
++		codec {
++			sound-dai = <&msm_stub_codec 1>;
++		};
++	};
++
++	mi2s1-playback-dai-link {
++		link-name = "MI2S-LPAIF-RX-SECONDARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai SECONDARY_MI2S_RX>;
++		};
++
++		codec {
++			sound-dai = <&msm_stub_codec 0>;
++		};
++	};
++
++	mi2s3-capture-dai-link {
++		link-name = "MI2S-LPAIF_RXTX-TX-PRIMARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai QUATERNARY_MI2S_TX>;
++		};
++
++		codec {
++			sound-dai = <&sgtl5000>;
++		};
++	};
++
++	mi2s3-playback-dai-link {
++		link-name = "MI2S-LPAIF_RXTX-RX-PRIMARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai QUATERNARY_MI2S_RX>;
++		};
++
++		codec {
++			sound-dai = <&sgtl5000>;
++		};
++	};
++
+ 	tdm-capture-dai-link {
+ 		link-name = "TDM-LPAIF-TX-PRIMARY";
+ 
+@@ -82,6 +136,68 @@ codec {
+ 
+ };
+ 
++&lpass_tlmm {
++	mi2s3_sclk_sleep: mi2s3-sclk-sleep {
++		pins = "gpio0";
++		function = "qua_mi2s_sclk";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_ws_sleep: mi2s3-ws-sleep {
++		pins = "gpio1";
++		function = "qua_mi2s_ws";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_data0_sleep: mi2s3-data0-sleep {
++		pins = "gpio2";
++		function = "qua_mi2s_data";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_data1_sleep: mi2s3-data1-sleep {
++		pins = "gpio3";
++		function = "qua_mi2s_data";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++};
++
++&mi2s3_data0 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s3_data1 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s3_sclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s3_ws {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s1_mclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
+ &spmi_bus {
+ 	pmic@PM7250B_SID {
+ 		pm7250b_bcl: bcl@1d00 {
+@@ -271,6 +387,30 @@ mi2s0_ws_sleep: mi2s0-ws-sleep {
+ 		bias-pull-down;
+ 		input-enable;
+ 	};
++
++	mi2s1_data0_sleep: mi2s1-data0-sleep {
++		pins = "gpio107";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s1_sclk_sleep: mi2s1-sclk-sleep {
++		pins = "gpio106";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s1_ws_sleep: mi2s1-ws-sleep {
++		pins = "gpio108";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
+ };
+ 
+ &mi2s0_data0 {
+@@ -301,6 +441,23 @@ &mi2s0_ws {
+ 	output-high;
+ };
+ 
++&mi2s1_data0 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s1_sclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s1_ws {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
+ &spmi_bus {
+ 	/delete-node/ pmic@PM7250B_SID;
+ 	/delete-node/ pmic@PM7250B_SID1;
+@@ -314,3 +471,17 @@ &thermal_zones {
+ 	/delete-node/ pm7250b-bcl-lvl2;
+ 	/delete-node/ pm7250b-thermal;
+ };
++
++&i2c3 {
++	status = "ok";
++	qcom,clk-freq-out = <100000>;
++	sgtl5000: codec@a {
++		compatible = "fsl,sgtl5000";
++		reg = <0x0a>;
++		clocks = <&q6prmcc LPASS_CLK_ID_MCLK_2 LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
++		#sound-dai-cells = <0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&mi2s1_mclk>;
++	};
++};
++
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index 6c652c92f289..f2c2de1c7936 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -110,8 +110,8 @@ sound: sound {
+ 		compatible = "qcom,qcm6490-sndcard";
+ 		model = "qcm6490-rb3-snd-card";
+ 
+-			#address-cells = <1>;
+-			#size-cells = <0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
+ 	};
+ 
+ 	thermal-zones {
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index ca3b4575d1c9..206e9b5ba4ec 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2825,6 +2825,26 @@ lpass_tlmm: pinctrl@33c0000 {
+ 			#gpio-cells = <2>;
+ 			gpio-ranges = <&lpass_tlmm 0 0 15>;
+ 
++			mi2s3_sclk: mi2s3-sclk-state {
++				pins = "gpio0";
++				function = "qua_mi2s_sclk";
++			};
++
++			mi2s3_ws: mi2s3-ws-state {
++				pins = "gpio1";
++				function = "qua_mi2s_ws";
++			};
++
++			mi2s3_data0: mi2s3-data0-state {
++				pins = "gpio2";
++				function = "qua_mi2s_data";
++			};
++
++			mi2s3_data1: mi2s3-data1-state {
++				pins = "gpio3";
++				function = "qua_mi2s_data";
++			};
++
+ 			lpass_dmic01_clk: dmic01-clk-state {
+ 				pins = "gpio6";
+ 				function = "dmic1_clk";
+-- 
+2.47.0
+

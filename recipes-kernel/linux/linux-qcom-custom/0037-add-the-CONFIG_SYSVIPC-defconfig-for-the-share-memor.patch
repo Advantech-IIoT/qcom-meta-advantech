@@ -1,0 +1,22 @@
+From 424cc31f1bad2db74db3398102867c3fcd0e865e Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 17 Dec 2024 11:40:43 +0800
+Subject: [PATCH 1/1] add the CONFIG_SYSVIPC defconfig for the share memory
+ sysv and POSIX mmap by IPC
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 517072ad7111..a970c35a1a6f 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -53,3 +53,4 @@ CONFIG_EEPROM_AT24=y
+ CONFIG_SND_SOC_SGTL5000=m
+ CONFIG_USB_NET_QMI_WWAN=m
+ CONFIG_USB_NET_CDC_MBIM=m
++CONFIG_SYSVIPC=y
+-- 
+2.25.1
+

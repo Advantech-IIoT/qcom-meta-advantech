@@ -1,0 +1,64 @@
+From e44174716a707127c2a889085d5be682356502c9 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 8 Oct 2024 12:48:48 +0800
+Subject: [PATCH 30/35] enable the emmc function
+
+---
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts | 28 ++++++++++++++++++++
+ arch/arm64/configs/qcom_defconfig            |  1 -
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index f2c2de1c7936..7b0aebfe7a2c 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -943,6 +943,34 @@ &ufs_mem_phy {
+ 	status = "okay";
+ };
+ 
++&sdc1_clk {
++	bias-disable;
++	drive-strength = <16>;
++};
++
++&sdc1_cmd {
++	bias-pull-up;
++	drive-strength = <10>;
++};
++
++&sdc1_data {
++	bias-pull-up;
++	drive-strength = <10>;
++};
++
++&sdc1_rclk {
++	bias-pull-down;
++};
++
++&sdhc_1 {
++	non-removable;
++	no-sd;
++	no-sdio;
++	pinctrl-0 = <&sdc1_clk>, <&sdc1_cmd>, <&sdc1_data>, <&sdc1_rclk>;
++
++	status = "okay";
++};
++
+ &sdhc_2 {
+ 	status = "okay";
+ 
+diff --git a/arch/arm64/configs/qcom_defconfig b/arch/arm64/configs/qcom_defconfig
+index 7600491ddbca..fb9f8b450200 100644
+--- a/arch/arm64/configs/qcom_defconfig
++++ b/arch/arm64/configs/qcom_defconfig
+@@ -517,7 +517,6 @@ CONFIG_MMC_SDHCI_MSM=y
+ CONFIG_MMC_SPI=y
+ CONFIG_SCSI_UFSHCD=y
+ CONFIG_SCSI_UFS_BSG=y
+-CONFIG_SCSI_UFS_CRYPTO=y
+ CONFIG_SCSI_UFSHCD_PLATFORM=y
+ CONFIG_SCSI_UFS_QCOM=y
+ CONFIG_NEW_LEDS=y
+-- 
+2.47.0
+

@@ -1,0 +1,21 @@
+From 2f1f015148f6dc12fada7759e354f056f4d41205 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:57:46 +0800
+Subject: [PATCH 28/35] add the USB_NET_QMI_WWAN defconfig
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 7443bdbd5621..0bb39ef90363 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -51,3 +51,4 @@ CONFIG_MTD_SPI_NOR=m
+ CONFIG_RTC_DRV_RV8803=y
+ CONFIG_EEPROM_AT24=y
+ CONFIG_SND_SOC_SGTL5000=m
++CONFIG_USB_NET_QMI_WWAN=m
+-- 
+2.47.0
+

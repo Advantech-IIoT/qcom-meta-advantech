@@ -1,0 +1,40 @@
+From 64c7a6daa2859c409f6d0ec828350563908c6c12 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Wed, 12 Jun 2024 15:14:59 +0800
+Subject: [PATCH 06/35] support short pressing power key to power off device
+
+---
+ drivers/input/misc/pm8941-pwrkey.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
+index ba747c5b2b5f..dc614f6c838a 100644
+--- a/drivers/input/misc/pm8941-pwrkey.c
++++ b/drivers/input/misc/pm8941-pwrkey.c
+@@ -183,6 +183,23 @@ static irqreturn_t pm8941_pwrkey_irq(int irq, void *_data)
+ 	input_report_key(pwrkey->input, pwrkey->code, sts);
+ 	input_sync(pwrkey->input);
+ 
++	//=============================================================
++	err = regmap_update_bits(pwrkey->regmap, 0x815, 0x20, 0x20);
++	err = regmap_update_bits(pwrkey->regmap, 0x856, 0xFF, 0x00);
++
++	/* Wait for at least 10 sleep clock cycles. */
++	usleep_range(100, 1000);
++
++	err = regmap_update_bits(pwrkey->regmap, 0x856, 0xFF, 0x4);
++
++	/* Wait for at least 10 sleep clock cycles. */
++	usleep_range(100, 1000);
++
++	err = regmap_update_bits(pwrkey->regmap, 0x857, 0xFF, 0xA5);
++
++	dev_dbg(pwrkey->dev, "power key sw power off type = PON_POWER_OFF_SHUTDOWN\n");
++	//=============================================================
++
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+2.47.0
+

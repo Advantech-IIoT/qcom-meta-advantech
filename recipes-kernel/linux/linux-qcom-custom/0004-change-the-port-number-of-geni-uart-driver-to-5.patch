@@ -1,0 +1,48 @@
+From 026946ee890c0fe8f21184deb3e219169bfb939c Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Wed, 29 May 2024 10:16:12 +0800
+Subject: [PATCH 04/35] change the port number of geni uart driver to 5
+
+---
+ drivers/tty/serial/qcom_geni_serial.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 811ff6113173..2b4125cebec6 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -94,7 +94,7 @@ void serial_trace_log(struct device *dev, const char *fmt, ...)
+ #define STALE_TIMEOUT			16
+ #define DEFAULT_BITS_PER_CHAR		10
+ #define GENI_UART_CONS_PORTS		1
+-#define GENI_UART_PORTS			3
++#define GENI_UART_PORTS			5
+ #define DEF_FIFO_DEPTH_WORDS		16
+ #define DEF_TX_WM			2
+ #define DEF_FIFO_WIDTH_BITS		32
+@@ -192,6 +192,22 @@ static struct qcom_geni_serial_port qcom_geni_uart_ports[GENI_UART_PORTS] = {
+ 			.line = 2,
+ 		},
+ 	},
++	[3] = {
++		.uport = {
++			.iotype = UPIO_MEM,
++			.ops = &qcom_geni_uart_pops,
++			.flags = UPF_BOOT_AUTOCONF,
++			.line = 3,
++		},
++	},
++	[4] = {
++		.uport = {
++			.iotype = UPIO_MEM,
++			.ops = &qcom_geni_uart_pops,
++			.flags = UPF_BOOT_AUTOCONF,
++			.line = 4,
++		},
++	},
+ };
+ 
+ static struct qcom_geni_serial_port qcom_geni_console_port = {
+-- 
+2.47.0
+

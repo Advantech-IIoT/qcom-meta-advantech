@@ -1,0 +1,156 @@
+From 84d3ff50ba3880f1db77223418b6a68b4afe1761 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 09:40:16 +0800
+Subject: [PATCH 09/35] support the SPI1, SPI2 and SPI3 nor flash function
+
+---
+ arch/arm64/boot/dts/qcom/qcm6490.dtsi        |  2 +-
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts | 54 ++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi         | 21 ++++++--
+ 3 files changed, 73 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcm6490.dtsi b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
+index dcc844d12f6f..01ebb4b63d20 100644
+--- a/arch/arm64/boot/dts/qcom/qcm6490.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
+@@ -601,7 +601,7 @@ &swr2 {
+ };
+ 
+ &tlmm {
+-	gpio-reserved-ranges = <32 2>, <48 4>;
++	gpio-reserved-ranges = <32 2>;
+ };
+ 
+ &venus {
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index b6efa28551aa..031bfeac5a0c 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -1168,3 +1168,57 @@ &usb_2_hsphy {
+ 
+ 	status = "okay";
+ };
++
++&spi7 {
++	status = "okay";
++
++	spi@0 { /* chip select 0 */
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++
++	spi@3 { /* chip select 3 */
++		compatible = "jedec,spi-nor";
++		reg = <3>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++};
++
++&spi12 {
++	status = "okay";
++
++	spi@0 { /* chip select 0 */
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++
++	spi@3 { /* chip select 3 */
++		compatible = "jedec,spi-nor";
++		reg = <3>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++};
++
++&spi14 {
++	status = "okay";
++
++	spi@0 { /* chip select 0 */
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++
++	spi@1 { /* chip select 1 */
++		compatible = "jedec,spi-nor";
++		reg = <1>;
++		spi-max-frequency = <10000000>;
++		status = "okay";
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 571cd7844288..5aa83f0a8c34 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -1519,7 +1519,7 @@ spi7: spi@99c000 {
+ 				clocks = <&gcc GCC_QUPV3_WRAP0_S7_CLK>;
+ 				clock-names = "se";
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&qup_spi7_data_clk>, <&qup_spi7_cs>;
++				pinctrl-0 = <&qup_spi7_data_clk>, <&qup_spi7_cs>, <&qup_spi7_cs3>;
+ 				interrupts = <GIC_SPI 608 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+@@ -1854,7 +1854,7 @@ spi12: spi@a90000 {
+ 				clocks = <&gcc GCC_QUPV3_WRAP1_S4_CLK>;
+ 				clock-names = "se";
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&qup_spi12_data_clk>, <&qup_spi12_cs>;
++				pinctrl-0 = <&qup_spi12_data_clk>, <&qup_spi12_cs>, <&qup_spi12_cs3>;
+ 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+@@ -1974,7 +1974,7 @@ spi14: spi@a98000 {
+ 				clocks = <&gcc GCC_QUPV3_WRAP1_S6_CLK>;
+ 				clock-names = "se";
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&qup_spi14_data_clk>, <&qup_spi14_cs>;
++				pinctrl-0 = <&qup_spi14_data_clk>, <&qup_spi14_cs>, <&qup_spi14_cs1>;
+ 				interrupts = <GIC_SPI 368 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+@@ -6315,6 +6315,11 @@ qup_spi7_cs: qup-spi7-cs-state {
+ 				function = "qup07";
+ 			};
+ 
++			qup_spi7_cs3: qup-spi7-cs3-state {
++				pins = "gpio6";
++				function = "qup07";
++			};
++
+ 			qup_spi7_cs_gpio: qup-spi7-cs-gpio-state {
+ 				pins = "gpio31";
+ 				function = "gpio";
+@@ -6390,6 +6395,11 @@ qup_spi12_cs: qup-spi12-cs-state {
+ 				function = "qup14";
+ 			};
+ 
++			qup_spi12_cs3: qup-spi12-cs3-state {
++				pins = "gpio38";
++				function = "qup14";
++			};
++
+ 			qup_spi12_cs_gpio: qup-spi12-cs-gpio-state {
+ 				pins = "gpio51";
+ 				function = "gpio";
+@@ -6420,6 +6430,11 @@ qup_spi14_cs: qup-spi14-cs-state {
+ 				function = "qup16";
+ 			};
+ 
++			qup_spi14_cs1: qup-spi14-cs1-state {
++				pins = "gpio62";
++				function = "qup16";
++			};
++
+ 			qup_spi14_cs_gpio: qup-spi14-cs-gpio-state {
+ 				pins = "gpio59";
+ 				function = "gpio";
+-- 
+2.47.0
+

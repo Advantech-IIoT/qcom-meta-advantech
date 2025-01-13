@@ -1,0 +1,21 @@
+From db68d8298cadab0c310b7085f8a8ef3d23adc45a Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:25:39 +0800
+Subject: [PATCH 10/35] add the defconfig of RTC_DRV_RV8803 driver
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 65a9fcaa506b..3b3d0a076239 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -48,3 +48,4 @@ CONFIG_GPIO_SYSFS=y
+ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
+ CONFIG_MTD_SPI_NOR=m
++CONFIG_RTC_DRV_RV8803=y
+-- 
+2.47.0
+

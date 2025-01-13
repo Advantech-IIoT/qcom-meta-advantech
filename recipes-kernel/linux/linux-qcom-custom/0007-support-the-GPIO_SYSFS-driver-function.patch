@@ -1,0 +1,35 @@
+From 824a55b905cba4491295a09048c2d7407656fe75 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:21:52 +0800
+Subject: [PATCH 07/35] support the GPIO_SYSFS driver function
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ drivers/gpio/Kconfig                  | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 2d3fb284306d..c92c273a279c 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -44,3 +44,4 @@ CONFIG_SND_SOC_MSM_STUB=y
+ CONFIG_STM_PROTO_OST=m
+ CONFIG_USB_F_QDSS=m
+ CONFIG_VIRT_DRIVERS=y
++CONFIG_GPIO_SYSFS=y
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index d56b835359d3..33bcbe1c1720 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -59,7 +59,7 @@ config DEBUG_GPIO
+ 	  that are most common when setting up new platforms or boards.
+ 
+ config GPIO_SYSFS
+-	bool "/sys/class/gpio/... (sysfs interface)" if EXPERT
++	bool "/sys/class/gpio/... (sysfs interface)"
+ 	depends on SYSFS
+ 	select GPIO_CDEV # We need to encourage the new ABI
+ 	help
+-- 
+2.47.0
+

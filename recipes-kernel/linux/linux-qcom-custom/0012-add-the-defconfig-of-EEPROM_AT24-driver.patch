@@ -1,0 +1,21 @@
+From 4deb4630843c0731817e1ba0f06d4f460cde715b Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:26:50 +0800
+Subject: [PATCH 12/35] add the defconfig of EEPROM_AT24 driver
+
+---
+ arch/arm64/configs/qcom_addons.config | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
+index 3b3d0a076239..a4376055a14d 100644
+--- a/arch/arm64/configs/qcom_addons.config
++++ b/arch/arm64/configs/qcom_addons.config
+@@ -49,3 +49,4 @@ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
+ CONFIG_MTD_SPI_NOR=m
+ CONFIG_RTC_DRV_RV8803=y
++CONFIG_EEPROM_AT24=y
+-- 
+2.47.0
+

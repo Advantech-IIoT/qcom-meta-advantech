@@ -1,0 +1,111 @@
+From e813843e3d1d65caca96edc79c5d29ccd3f804bb Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Fri, 29 Nov 2024 22:13:13 +0800
+Subject: [PATCH 36/36] dts: set the direction and value of some gpio pins
+
+The wifi and 5G function will fail for the DVT2 board if WLAN_PWR_EN and VLTE_PWR_EN are not set.
+Following pins are set the direction and value in this commit.
+1. WLAN_PWR_EN
+2. VLTE_PWR_EN
+3. UARTB_SLEW
+4. UARTB_TERM
+---
+ .../boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi | 14 ++++++++-
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts  | 31 +++++++++++++++++--
+ 2 files changed, 42 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+index 44a4116bedba..1ff495f71493 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+@@ -40,11 +40,23 @@ qps615_rsex_vreg: qps615-rsex-vreg {
+ 		regulator-enable-ramp-delay = <10000>;
+ 	};
+ 
++	vlte_power_en_vreg: vlte_power_en_vreg {
++                compatible = "regulator-fixed";
++                regulator-name = "vlte_power_en_vreg";
++                gpio = <&tlmm 115 GPIO_ACTIVE_HIGH>;
++                vin-supply = <&qps615_rsex_vreg>;
++                regulator-min-microvolt = <1000000>;
++                regulator-max-microvolt = <1000000>;
++                enable-active-high;
++                regulator-enable-ramp-delay = <10000>;
++                regulator-always-on;
++        };
++
+ 	upd_3p3_vreg: upd_3p3_vreg {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "upd_3p3_vreg";
+ 		gpio = <&tlmm 114 GPIO_ACTIVE_HIGH>;
+-		vin-supply = <&qps615_rsex_vreg>;
++		vin-supply = <&vlte_power_en_vreg>;
+ 		regulator-min-microvolt = <1000000>;
+ 		regulator-max-microvolt = <1000000>;
+ 		enable-active-high;
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index bb434db6112e..918a6b9a4af2 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -655,7 +655,8 @@ &lpass_wsa_swr_data {
+ 
+ &pcie0 {
+ 	max-link-speed = <2>;
+-	pinctrl-0 = <&pcie0_clkreq_n>, <&pcie0_reset_n>, <&pcie0_wake_n>, <&m2e_wlan_en>, <&m2e_bt_en>;
++	pinctrl-0 = <&pcie0_clkreq_n>, <&pcie0_reset_n>, <&pcie0_wake_n>,
++			<&m2e_wlan_power_en>, <&m2e_wlan_en>, <&m2e_bt_en>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+@@ -858,6 +859,22 @@ qup_uart6_sleep_tx: qup-uart6-sleep-tx-state {
+ 		bias-pull-up;
+ 	};
+ 
++	uartb_slew_default: uartb-slew-default-state {
++                pins = "gpio35";
++                function = "gpio";
++                drive-strength = <2>;
++                output-high;
++                bias-pull-up;
++        };
++
++	uartb_term_default: uartb-term-default-state {
++                pins = "gpio44";
++                function = "gpio";
++                drive-strength = <2>;
++                output-high;
++                bias-pull-up;
++        };
++
+ 	uartb_mode0_default: uartb-mode0-default-state {
+ 		pins = "gpio53";
+ 		function = "gpio";
+@@ -874,6 +891,14 @@ uartb_mode1_default: uartb-mode1-default-state {
+ 		bias-pull-down;
+ 	};
+ 
++	m2e_wlan_power_en: m2e-wlan-power-en-state {
++                pins = "gpio64";
++                function = "gpio";
++                drive-strength = <16>;
++                output-high;
++                bias-pull-up;
++        };
++
+ 	m2e_wlan_en: m2e-wlan-en-state {
+ 		pins = "gpio84";
+ 		function = "gpio";
+@@ -909,7 +934,9 @@ &uart6 {
+ &uart10 {
+ 	status = "okay";
+ 	/delete-property/pinctrl-0;
+-	pinctrl-0 = <&qup_uart10_cts>, <&qup_uart10_rts>, <&qup_uart10_tx>, <&qup_uart10_rx>, <&uartb_mode0_default>, <&uartb_mode1_default>;
++	pinctrl-0 = <&qup_uart10_cts>, <&qup_uart10_rts>, <&qup_uart10_tx>, <&qup_uart10_rx>,
++			<&uartb_slew_default>, <&uartb_term_default>,
++			<&uartb_mode0_default>, <&uartb_mode1_default>;
+ 	qcom,flow-control;
+ };
+ 
+-- 
+2.47.0
+

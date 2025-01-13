@@ -1,0 +1,33 @@
+From eba278fdb5dd9bbe61778e15ea907dd037ee3ef2 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 11:45:09 +0800
+Subject: [PATCH 16/35] modify dts to set primary and 2nd usb port as host
+
+---
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index 043302634c96..cc6de4a9202d 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -1025,6 +1025,7 @@ &usb_1 {
+ 	usb-role-switch;
+ 	qcom,enable-rt;
+ 	wakeup-source;
++	role-switch-default-mode = "host";
+ 
+ 	status = "okay";
+ 
+@@ -1179,7 +1180,7 @@ &usb_2 {
+ 	usb-role-switch;
+ 	qcom,enable-rt;
+ 	wakeup-source;
+-	dr_mode = "otg";
++	dr_mode = "host";
+ 
+ 	status = "okay";
+ 
+-- 
+2.47.0
+

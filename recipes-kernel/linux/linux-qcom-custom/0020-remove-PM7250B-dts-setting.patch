@@ -1,0 +1,57 @@
+From 4404b882c6d5b8ff2832879311ea34c0f0b87136 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:38:37 +0800
+Subject: [PATCH 20/35] remove PM7250B dts setting
+
+---
+ .../qcom/qcs6490-addons-rb3gen2-vision-mezz.dts    | 14 ++++++++++++++
+ .../boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi      |  4 ++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+index 62a285bab4f3..58a0a8a8fc07 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+@@ -310,3 +310,17 @@ &mi2s0_ws {
+ 	bias-disable;
+ 	output-high;
+ };
++
++&spmi_bus {
++	/delete-node/ pmic@PM7250B_SID;
++	/delete-node/ pmic@PM7250B_SID1;
++};
++
++&thermal_zones {
++	/delete-node/ pm7250b-ibat-lvl0;
++	/delete-node/ pm7250b-ibat-lvl1;
++	/delete-node/ pm7250b-bcl-lvl0;
++	/delete-node/ pm7250b-bcl-lvl1;
++	/delete-node/ pm7250b-bcl-lvl2;
++	/delete-node/ pm7250b-thermal;
++};
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+index 9045a55254c0..198a7a83a11a 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+@@ -79,7 +79,7 @@ qep_vreg: qep_vreg {
+ 		status = "disabled";
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "qep_vreg";
+-		gpio = <&pm7325_gpios 8 0>;
++		//gpio = <&pm7325_gpios 8 0>;
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
+ 		enable-active-high;
+@@ -89,7 +89,7 @@ aqr_vreg: aqr_vreg {
+ 		status = "disabled";
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "aqr_vreg";
+-		gpio = <&pm7250b_gpios 4 0>;
++		//gpio = <&pm7250b_gpios 4 0>;
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
+ 		enable-active-high;
+-- 
+2.47.0
+

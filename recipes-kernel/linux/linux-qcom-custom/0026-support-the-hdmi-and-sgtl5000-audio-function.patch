@@ -1,0 +1,282 @@
+From 389c09db7a291ff37638712eecb4bdc9258130fd Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 15:17:50 +0800
+Subject: [PATCH 26/35] support the hdmi and sgtl5000 audio function
+
+---
+ sound/soc/codecs/sgtl5000.c         |  5 +-
+ sound/soc/qcom/qcm6490.c            | 92 +++++++++++++++++++++++++++--
+ sound/soc/qcom/qdsp6/q6prm-clocks.c |  5 ++
+ sound/soc/qcom/qdsp6/q6prm.h        | 11 ++++
+ sound/soc/qcom/sdw.c                | 11 ++++
+ 5 files changed, 118 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
+index b22ba95bd0c0..9d3b6dbd9325 100644
+--- a/sound/soc/codecs/sgtl5000.c
++++ b/sound/soc/codecs/sgtl5000.c
+@@ -48,7 +48,7 @@ static const struct reg_default sgtl5000_reg_defaults[] = {
+ 	{ SGTL5000_CHIP_PAD_STRENGTH,		0x015f },
+ 	{ SGTL5000_CHIP_ANA_ADC_CTRL,		0x0000 },
+ 	{ SGTL5000_CHIP_ANA_HP_CTRL,		0x1818 },
+-	{ SGTL5000_CHIP_ANA_CTRL,		0x0111 },
++	{ SGTL5000_CHIP_ANA_CTRL,		0x0011 },
+ 	{ SGTL5000_CHIP_REF_CTRL,		0x0000 },
+ 	{ SGTL5000_CHIP_MIC_CTRL,		0x0000 },
+ 	{ SGTL5000_CHIP_LINE_OUT_CTRL,		0x0000 },
+@@ -741,7 +741,6 @@ static const struct snd_kcontrol_new sgtl5000_snd_controls[] = {
+ 			SGTL5000_LINE_OUT_VOL_RIGHT_SHIFT,
+ 			0x1f, 1,
+ 			lineout_volume),
+-	SOC_SINGLE("Lineout Playback Switch", SGTL5000_CHIP_ANA_CTRL, 8, 1, 1),
+ 
+ 	SOC_SINGLE_TLV("DAP Main channel", SGTL5000_DAP_MAIN_CHAN,
+ 	0, 0xffff, 0, dap_volume),
+@@ -1300,6 +1299,7 @@ static int sgtl5000_set_power_regs(struct snd_soc_component *component)
+ 	size_t i;
+ 	struct sgtl5000_priv *sgtl5000 = snd_soc_component_get_drvdata(component);
+ 
++	return 0;
+ 	vdda  = regulator_get_voltage(sgtl5000->supplies[VDDA].consumer);
+ 	vddio = regulator_get_voltage(sgtl5000->supplies[VDDIO].consumer);
+ 	vddd  = (sgtl5000->num_supplies > VDDD)
+@@ -1614,6 +1614,7 @@ static int sgtl5000_i2c_probe(struct i2c_client *client)
+ 
+ 		goto disable_regs;
+ 	}
++	clk_set_rate(sgtl5000->mclk, 12288000);
+ 
+ 	ret = clk_prepare_enable(sgtl5000->mclk);
+ 	if (ret) {
+diff --git a/sound/soc/qcom/qcm6490.c b/sound/soc/qcom/qcm6490.c
+index 78885df79b47..a5741e3f3332 100644
+--- a/sound/soc/qcom/qcm6490.c
++++ b/sound/soc/qcom/qcm6490.c
+@@ -24,6 +24,9 @@
+ #define WCN_CDC_SLIM_RX_CH_MAX	2
+ #define WCN_CDC_SLIM_TX_CH_MAX	2
+ 
++#define DEFAULT_MCLK_RATE		12288000
++#define SGTL5000_SYSCLK 0x00
++
+ struct qcm6490_snd_data {
+ 	bool stream_prepared[AFE_PORT_MAX];
+ 	struct snd_soc_card *card;
+@@ -45,23 +48,64 @@ static int qcm6490_slim_dai_init(struct snd_soc_pcm_runtime *rtd)
+ 	return ret;
+ }
+ 
++static int qcm6490_sgtl5000_init(struct snd_soc_pcm_runtime *rtd)
++{
++	unsigned int fmt = SND_SOC_DAIFMT_CBS_CFS;
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
++	struct snd_soc_card *card = rtd->card;
++	struct qcm6490_snd_data *data = snd_soc_card_get_drvdata(card);
++	int ret;
++
++//	if (++data->pri_mi2s_clk_count == 1) {
++//		snd_soc_dai_set_sysclk(cpu_dai,
++//			LPASS_MCLK0,
++//			DEFAULT_MCLK_RATE,
++//			SNDRV_PCM_STREAM_PLAYBACK);
++//	}
++	snd_soc_dai_set_fmt(cpu_dai, fmt);
++	snd_soc_dai_set_fmt(codec_dai,
++				SND_SOC_DAIFMT_CBC_CFC |
++				SND_SOC_DAIFMT_NB_NF |
++				SND_SOC_DAIFMT_I2S);
++
++//	ret = snd_soc_dai_set_pll(codec_dai, RT5682S_PLL2, RT5682S_PLL_S_MCLK,
++//					DEFAULT_MCLK_RATE, RT5682_PLL_FREQ);
++//	if (ret) {
++//		dev_err(rtd->dev, "can't set codec pll: %d\n", ret);
++//		return ret;
++//	}
++
++	ret = snd_soc_dai_set_sysclk(codec_dai, SGTL5000_SYSCLK,
++					DEFAULT_MCLK_RATE,
++					SND_SOC_CLOCK_IN);
++
++	if (ret) {
++		dev_err(rtd->dev, "snd_soc_dai_set_sysclk err = %d\n",
++			ret);
++		return ret;
++	}
++
++	return 0;
++}
++
+ static int qcm6490_snd_init(struct snd_soc_pcm_runtime *rtd)
+ {
+ 	struct qcm6490_snd_data *data = snd_soc_card_get_drvdata(rtd->card);
+ 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
+ 
+ 	switch (cpu_dai->id) {
+-	case TX_CODEC_DMA_TX_3:
+-	case LPASS_CDC_DMA_TX3:
+-	case RX_CODEC_DMA_RX_0:
+-		return qcom_snd_wcd_jack_setup(rtd, &data->jack, &data->jack_setup);
+ 	case VA_CODEC_DMA_TX_0:
+ 	case WSA_CODEC_DMA_RX_0:
+ 	case WSA_CODEC_DMA_TX_0:
+ 	case PRIMARY_MI2S_RX:
+ 	case PRIMARY_MI2S_TX:
++	case SECONDARY_MI2S_RX:
++	case SECONDARY_MI2S_TX:
+ 	case PRIMARY_TDM_RX_0:
+ 	case PRIMARY_TDM_TX_0:
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
+ 		return 0;
+ 	case SLIMBUS_0_RX:
+ 	case SLIMBUS_0_TX:
+@@ -131,6 +175,44 @@ static int qcm6490_snd_hw_free(struct snd_pcm_substream *substream)
+ 				    &data->stream_prepared[cpu_dai->id]);
+ }
+ 
++static void qcm6490_snd_shutdown(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_card *card = rtd->card;
++	struct qcm6490_snd_data *data = snd_soc_card_get_drvdata(card);
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++
++	switch (cpu_dai->id) {
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
++		break;
++	default:
++		break;
++	}
++}
++
++static int qcm6490_snd_startup(struct snd_pcm_substream *substream)
++{
++	unsigned int fmt = SND_SOC_DAIFMT_CBS_CFS;
++	unsigned int codec_dai_fmt = SND_SOC_DAIFMT_CBS_CFS;
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
++	int ret = 0;
++
++	dev_err(rtd->dev, "%s: dai id 0x%x \n", __func__, cpu_dai->id);
++	dev_err(rtd->dev, "%s: QUATERNARY_MI2S_RX=0x%x QUATERNARY_MI2S_TX=0x%x\n", __func__, QUATERNARY_MI2S_RX, QUATERNARY_MI2S_TX);
++	switch (cpu_dai->id) {
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
++		ret = qcm6490_sgtl5000_init(rtd);
++		break;
++	default:
++		break;
++	}
++	return ret;
++}
++
+ static const struct snd_soc_dapm_widget qcm6490_dapm_widgets[] = {
+ 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+ 	SND_SOC_DAPM_MIC("Mic Jack", NULL),
+@@ -143,9 +225,11 @@ static const struct snd_soc_dapm_route qcm6490_dapm_routes[] = {
+ };
+ 
+ static const struct snd_soc_ops qcm6490_be_ops = {
++	.startup = qcm6490_snd_startup,
+ 	.hw_params = qcm6490_snd_hw_params,
+ 	.hw_free = qcm6490_snd_hw_free,
+ 	.prepare = qcm6490_snd_prepare,
++	.shutdown = qcm6490_snd_shutdown,
+ };
+ 
+ static void qcm6490_add_be_ops(struct snd_soc_card *card)
+diff --git a/sound/soc/qcom/qdsp6/q6prm-clocks.c b/sound/soc/qcom/qdsp6/q6prm-clocks.c
+index 73b0cbac73d4..b5268c800d70 100644
+--- a/sound/soc/qcom/qdsp6/q6prm-clocks.c
++++ b/sound/soc/qcom/qdsp6/q6prm-clocks.c
+@@ -42,6 +42,11 @@ static const struct q6dsp_clk_init q6prm_clks[] = {
+ 	Q6PRM_CLK(LPASS_CLK_ID_INT5_MI2S_IBIT),
+ 	Q6PRM_CLK(LPASS_CLK_ID_INT6_MI2S_IBIT),
+ 	Q6PRM_CLK(LPASS_CLK_ID_QUI_MI2S_OSR),
++	Q6PRM_CLK(LPASS_CLK_ID_MCLK_1),
++	Q6PRM_CLK(LPASS_CLK_ID_MCLK_2),
++	Q6PRM_CLK(LPASS_CLK_ID_MCLK_3),
++	Q6PRM_CLK(LPASS_CLK_ID_MCLK_4),
++	Q6PRM_CLK(LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE),
+ 	Q6PRM_CLK(LPASS_CLK_ID_WSA_CORE_MCLK),
+ 	Q6PRM_CLK(LPASS_CLK_ID_WSA_CORE_NPL_MCLK),
+ 	Q6PRM_CLK(LPASS_CLK_ID_VA_CORE_MCLK),
+diff --git a/sound/soc/qcom/qdsp6/q6prm.h b/sound/soc/qcom/qdsp6/q6prm.h
+index dc70564c6ef1..25bf5d1dca9e 100644
+--- a/sound/soc/qcom/qdsp6/q6prm.h
++++ b/sound/soc/qcom/qdsp6/q6prm.h
+@@ -73,6 +73,17 @@
+ /* Clock ID for QUINARY TDM EBIT */
+ #define Q6PRM_LPASS_CLK_ID_QUIN_TDM_EBIT			0x209
+ 
++/* Clock ID for MCLK1 */
++#define Q6PRM_LPASS_CLK_ID_MCLK_1                                 0x300
++/* Clock ID for MCLK2 */
++#define Q6PRM_LPASS_CLK_ID_MCLK_2                                 0x301
++/* Clock ID for MCLK3 */
++#define Q6PRM_LPASS_CLK_ID_MCLK_3                                 0x302
++/* Clock ID for MCLK4 */
++#define Q6PRM_LPASS_CLK_ID_MCLK_4                                 0x304
++/* Clock ID for Internal Digital Codec Core */
++#define Q6PRM_LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE            0x303
++
+ #define Q6PRM_LPASS_CLK_ID_WSA_CORE_MCLK			0x305
+ #define Q6PRM_LPASS_CLK_ID_WSA_CORE_NPL_MCLK			0x306
+ 
+diff --git a/sound/soc/qcom/sdw.c b/sound/soc/qcom/sdw.c
+index ce5598ad5365..a7c5c7af4c11 100644
+--- a/sound/soc/qcom/sdw.c
++++ b/sound/soc/qcom/sdw.c
+@@ -8,6 +8,9 @@
+ #include "qdsp6/q6afe.h"
+ #include "sdw.h"
+ 
++#define DEFAULT_MCLK_RATE		12288000
++#define SGTL5000_SYSCLK 0x00
++
+ int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
+ 			 struct sdw_stream_runtime *sruntime,
+ 			 bool *stream_prepared)
+@@ -29,6 +32,8 @@ int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
+ 	case TX_CODEC_DMA_TX_1:
+ 	case TX_CODEC_DMA_TX_2:
+ 	case TX_CODEC_DMA_TX_3:
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
+ 		break;
+ 	default:
+ 		return 0;
+@@ -69,7 +74,9 @@ int qcom_snd_sdw_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
+ 	struct sdw_stream_runtime *sruntime;
+ 	int i;
++	int ret = 0;
+ 
++	dev_err(rtd->dev, "qcom_snd_sdw_hw_params\n");
+ 	switch (cpu_dai->id) {
+ 	case WSA_CODEC_DMA_RX_0:
+ 	case WSA_CODEC_DMA_TX_0:
+@@ -79,6 +86,8 @@ int qcom_snd_sdw_hw_params(struct snd_pcm_substream *substream,
+ 	case TX_CODEC_DMA_TX_1:
+ 	case TX_CODEC_DMA_TX_2:
+ 	case TX_CODEC_DMA_TX_3:
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
+ 		for_each_rtd_codec_dais(rtd, i, codec_dai) {
+ 			sruntime = snd_soc_dai_get_stream(codec_dai, substream->stream);
+ 			if (sruntime != ERR_PTR(-ENOTSUPP))
+@@ -108,6 +117,8 @@ int qcom_snd_sdw_hw_free(struct snd_pcm_substream *substream,
+ 	case TX_CODEC_DMA_TX_1:
+ 	case TX_CODEC_DMA_TX_2:
+ 	case TX_CODEC_DMA_TX_3:
++	case QUATERNARY_MI2S_RX:
++	case QUATERNARY_MI2S_TX:
+ 		if (sruntime && *stream_prepared) {
+ 			sdw_disable_stream(sruntime);
+ 			sdw_deprepare_stream(sruntime);
+-- 
+2.47.0
+

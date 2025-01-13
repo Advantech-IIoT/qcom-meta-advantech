@@ -1,0 +1,121 @@
+From 60696883985a5999c5cbe586028e4ae6e2b80a3b Mon Sep 17 00:00:00 2001
+From: Mantis Hsiang <quic_mantish@quicinc.com>
+Date: Sun, 15 Sep 2024 19:52:30 +0800
+Subject: [PATCH 19/35] config the dts of ethernet
+
+---
+ .../boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi | 33 ++++++++++---------
+ 1 file changed, 18 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+index 5b5e3d37ae8f..9045a55254c0 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+@@ -43,10 +43,10 @@ qps615_rsex_vreg: qps615-rsex-vreg {
+ 	upd_3p3_vreg: upd_3p3_vreg {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "upd_3p3_vreg";
+-		gpio = <&pm7250b_gpios 1 0>;
++		gpio = <&tlmm 114 GPIO_ACTIVE_HIGH>;
+ 		vin-supply = <&qps615_rsex_vreg>;
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
++		regulator-min-microvolt = <1000000>;
++		regulator-max-microvolt = <1000000>;
+ 		enable-active-high;
+ 		regulator-enable-ramp-delay = <10000>;
+ 		regulator-always-on;
+@@ -55,10 +55,10 @@ upd_3p3_vreg: upd_3p3_vreg {
+ 	upd_rest_vreg: upd_rest_vreg {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "upd_rest_vreg";
+-		gpio = <&pm8350c_gpios 4 0>;
++		gpio = <&tlmm 113 GPIO_ACTIVE_HIGH>;
+ 		vin-supply = <&upd_3p3_vreg>;
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
++		regulator-min-microvolt = <1000000>;
++		regulator-max-microvolt = <1000000>;
+ 		enable-active-high;
+ 		regulator-always-on;
+ 	};
+@@ -68,11 +68,15 @@ usbhub_rest_vreg: usbhub_rest_vreg {
+ 		regulator-name = "usbhub_rest_vreg";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pcie1_usb_hub_reset_default>;
+-		gpio = <&tlmm 162 GPIO_ACTIVE_LOW>;
++		gpio = <&tlmm 112 GPIO_ACTIVE_HIGH>;
++		vin-supply = <&upd_rest_vreg>;
++		regulator-min-microvolt = <1000000>;
++		regulator-max-microvolt = <1000000>;
+ 		enable-active-high;
+ 	};
+ 
+ 	qep_vreg: qep_vreg {
++		status = "disabled";
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "qep_vreg";
+ 		gpio = <&pm7325_gpios 8 0>;
+@@ -82,6 +86,7 @@ qep_vreg: qep_vreg {
+ 	};
+ 
+ 	aqr_vreg: aqr_vreg {
++		status = "disabled";
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "aqr_vreg";
+ 		gpio = <&pm7250b_gpios 4 0>;
+@@ -144,9 +149,8 @@ qps615_eth0,qps615_eth0@pcie1_rp {
+ 					pinctrl-names = "default";
+ 					pinctrl-0 = <&aqr_intn_wol_sig>;
+ 					qcom,phy-rst-gpio = <0>;
+-					interrupts-extended = <&tlmm 141 IRQ_TYPE_EDGE_FALLING>;
++					interrupts-extended = <&tlmm 130 IRQ_TYPE_EDGE_FALLING>;
+ 					interrupt-names = "wol_irq";
+-					phy-supply = <&aqr_vreg>;
+ 					qcom,phy-rst-delay-us = <221000>;
+ 					#address-cells = <1>;
+ 					#size-cells = <1>;
+@@ -166,9 +170,8 @@ qps615_eth1,qps615_eth1@pcie1_rp {
+ 					pinctrl-names = "default";
+ 					pinctrl-0 = <&napa_intn_wol_sig>;
+ 					qcom,phy-rst-gpio = <1>;
+-					interrupts-extended = <&tlmm 101 IRQ_TYPE_EDGE_FALLING>;
++					interrupts-extended = <&tlmm 131 IRQ_TYPE_EDGE_FALLING>;
+ 					interrupt-names = "wol_irq";
+-					phy-supply = <&qep_vreg>;
+ 					qcom,phy-rst-delay-us = <20000>;
+ 					#address-cells = <1>;
+ 					#size-cells = <1>;
+@@ -307,12 +310,12 @@ pcie1_usb_hub_reset_default: pcie1_usb_hub_reset_default {
+ 	qps615_intn_wol {
+ 		aqr_intn_wol_sig: aqr_intn_wol_sig {
+ 			mux {
+-				pins = "gpio141";
++				pins = "gpio130";
+ 				function = "gpio";
+ 			};
+ 
+ 			config {
+-				pins = "gpio141";
++				pins = "gpio130";
+ 				input-enable;
+ 				bias-disable;
+ 			};
+@@ -320,12 +323,12 @@ config {
+ 
+ 		napa_intn_wol_sig: napa_intn_wol_sig {
+ 			mux {
+-				pins = "gpio101";
++				pins = "gpio131";
+ 				function = "gpio";
+ 			};
+ 
+ 			config {
+-				pins = "gpio101";
++				pins = "gpio131";
+ 				input-enable;
+ 				bias-disable;
+ 			};
+-- 
+2.47.0
+

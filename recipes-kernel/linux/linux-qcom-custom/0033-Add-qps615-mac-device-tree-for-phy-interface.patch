@@ -1,0 +1,38 @@
+From 1921f300bb79e642b6f733b14f1c59d3090bdcac Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 29 Oct 2024 11:19:43 +0800
+Subject: [PATCH 33/35] Add qps615 mac device tree for phy interface
+
+---
+ arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+index 9fca2fdabada..44a4116bedba 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+@@ -150,6 +150,10 @@ qps615_eth0,qps615_eth0@pcie1_rp {
+ 					qcom,phy-rst-gpio = <0>;
+ 					interrupts-extended = <&tlmm 130 IRQ_TYPE_EDGE_FALLING>;
+ 					interrupt-names = "wol_irq";
++					qcom,phy-port-interface = <3>; //ENABLE_SGMII_INTERFACE
++					qcom,mdc-clk = <0x8>; //TC956XMAC_XGMAC_MDC_CSR_62 = 0x8
++					qcom,c45-state = <0>; //false
++					qcom,link-down-macrst = <0>; //disable
+ 					qcom,phy-rst-delay-us = <221000>;
+ 					#address-cells = <1>;
+ 					#size-cells = <1>;
+@@ -171,6 +175,10 @@ qps615_eth1,qps615_eth1@pcie1_rp {
+ 					qcom,phy-rst-gpio = <1>;
+ 					interrupts-extended = <&tlmm 131 IRQ_TYPE_EDGE_FALLING>;
+ 					interrupt-names = "wol_irq";
++					qcom,phy-port-interface = <5>; // ENABLE_RGMII_ID_INTERFACE
++					qcom,mdc-clk = <0x8>; //TC956XMAC_XGMAC_MDC_CSR_62 = 0x8
++					qcom,c45-state = <0>; //false
++					qcom,link-down-macrst = <0>; //disable
+ 					qcom,phy-rst-delay-us = <20000>;
+ 					#address-cells = <1>;
+ 					#size-cells = <1>;
+-- 
+2.47.0
+

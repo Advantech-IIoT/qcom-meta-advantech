@@ -1,0 +1,24 @@
+From 1d64b9eeda90a8101d35caf496e584f55d328f46 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 12:58:03 +0800
+Subject: [PATCH 18/35] set dts of typec-orientation reverse to enable dp
+
+---
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index ed0fd454c6aa..d3718407f605 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -5178,6 +5178,7 @@ usb_1_qmpphy: phy-wrapper@88e9000 {
+ 			resets = <&gcc GCC_USB3_DP_PHY_PRIM_BCR>,
+ 				 <&gcc GCC_USB3_PHY_PRIM_BCR>;
+ 			reset-names = "phy", "common";
++			typec-orientation = "reverse";
+ 
+ 			usb_1_ssphy: usb3-phy@88e9200 {
+ 				reg = <0 0x088e9200 0 0x200>,
+-- 
+2.47.0
+

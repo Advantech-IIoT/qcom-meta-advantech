@@ -1,0 +1,39 @@
+From 6254f12d58cffca4f410935fdeb74fcaa38fce20 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 12:56:46 +0800
+Subject: [PATCH 17/35] add checking of typec-orientation reverse for the dp
+
+---
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index 0417856b8e7b..716d9ca4a85f 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -3412,6 +3412,7 @@ static int qmp_combo_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *dp_np, *usb_np;
+ 	struct phy_provider *phy_provider;
++	const char *orientation;
+ 	int ret;
+ 
+ 	qmp = devm_kzalloc(dev, sizeof(*qmp), GFP_KERNEL);
+@@ -3421,6 +3422,14 @@ static int qmp_combo_probe(struct platform_device *pdev)
+ 	qmp->dev = dev;
+ 
+ 	qmp->orientation = TYPEC_ORIENTATION_NORMAL;
++	ret = of_property_read_string(dev->of_node, "typec-orientation", &orientation);
++	if (ret) {
++		dev_err(dev, "%s: No DT match typec-orientation\n",
++			__func__);
++	} else {
++		if (strcmp(orientation, "reverse") == 0)
++			qmp->orientation = TYPEC_ORIENTATION_REVERSE;
++	}
+ 
+ 	qmp->cfg = of_device_get_match_data(dev);
+ 	if (!qmp->cfg)
+-- 
+2.47.0
+

@@ -1,0 +1,136 @@
+From 969c4155adf596efa5825c986bc649136da13f39 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Sat, 9 Nov 2024 22:49:28 +0800
+Subject: [PATCH 23/35] remove audio-routing, pmic-glink and typec dts
+
+---
+ .../qcs6490-addons-rb3gen2-vision-mezz.dts    | 10 -------
+ .../boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi |  3 +-
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts  | 29 +++++++++++--------
+ 3 files changed, 18 insertions(+), 24 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+index 58a0a8a8fc07..488bc6a5e209 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+@@ -25,16 +25,6 @@ &sound {
+ 	compatible = "qcom,qcm6490-sndcard";
+ 	model = "qcm6490-rb3-vision-snd-card";
+ 
+-	audio-routing =
+-		"SpkrLeft IN", "WSA_SPK1 OUT",
+-		"SpkrRight IN", "WSA_SPK2 OUT",
+-		"VA DMIC0", "vdd-micb",
+-		"VA DMIC1", "vdd-micb",
+-		"VA DMIC2", "vdd-micb",
+-		"VA DMIC3", "vdd-micb",
+-		"VA DMIC4", "vdd-micb",
+-		"VA DMIC5", "vdd-micb";
+-
+ 	pinctrl-names = "default", "stub_aif1_active", "stub_aif1_sleep";
+ 	pinctrl-0 = <&mi2s0_data0_sleep>, <&mi2s0_data1_sleep>, <&mi2s0_mclk_sleep>,
+ 		    <&mi2s0_sclk_sleep>,<&mi2s0_ws_sleep>;
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+index 198a7a83a11a..9fca2fdabada 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2.dtsi
+@@ -66,13 +66,12 @@ upd_rest_vreg: upd_rest_vreg {
+ 	usbhub_rest_vreg: usbhub_rest_vreg {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "usbhub_rest_vreg";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pcie1_usb_hub_reset_default>;
+ 		gpio = <&tlmm 112 GPIO_ACTIVE_HIGH>;
+ 		vin-supply = <&upd_rest_vreg>;
+ 		regulator-min-microvolt = <1000000>;
+ 		regulator-max-microvolt = <1000000>;
+ 		enable-active-high;
++		regulator-always-on;
+ 	};
+ 
+ 	qep_vreg: qep_vreg {
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index 9f1104a3421d..55697e97b544 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -61,6 +61,7 @@ key-volume-up {
+ 	};
+ 
+ 	pmic-glink {
++		status = "disabled";
+ 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -68,6 +69,7 @@ pmic-glink {
+ 		qcom,thermal-mitigation = <3000000 1500000 1000000 500000>;
+ 
+ 		connector@0 {
++			status = "disabled";
+ 			compatible = "usb-c-connector";
+ 			reg = <0>;
+ 			power-role = "dual";
+@@ -425,6 +427,7 @@ &i2c1 {
+ 	status = "okay";
+ 
+ 	typec-mux@42 {
++		status = "disabled";
+ 		compatible = "fcs,fsa4480";
+ 		reg = <0x42>;
+ 		interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+@@ -448,6 +451,7 @@ fsa4480_sbu_mux: endpoint {
+ 	};
+ 
+ 	typec-retimer@1c {
++		status = "disabled";
+ 		compatible = "onnn,nb7vpq904m";
+ 		reg = <0x1c>;
+ 
+@@ -1089,6 +1093,7 @@ vbus_supply_regulator: vbus_supply_regulator {
+ 	};
+ 
+ 	connector_usb2: connector_usb2 {
++		status = "disabled";
+ 		compatible = "gpio-usb-b-connector";
+ 		vbus-gpio = <&pm7325_gpios 9 GPIO_ACTIVE_HIGH>;
+ 		//id-gpio = <&tlmm 61 GPIO_ACTIVE_HIGH>;
+@@ -1101,12 +1106,12 @@ ports {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
+-			port@0 {
+-				reg = <0>;
+-				usb2_port_connector: endpoint {
+-					remote-endpoint = <&usb2_port>;
+-				};
+-			};
++			//port@0 {
++			//	reg = <0>;
++			//	usb2_port_connector: endpoint {
++			//		remote-endpoint = <&usb2_port>;
++			//	};
++			//};
+ 		};
+ 	};
+ };
+@@ -1143,12 +1148,12 @@ ports {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		port@0 {
+-			reg = <0>;
+-			usb2_port: endpoint {
+-				remote-endpoint = <&usb2_port_connector>;
+-			};
+-		};
++		//port@0 {
++		//	reg = <0>;
++		//	usb2_port: endpoint {
++		//		remote-endpoint = <&usb2_port_connector>;
++		//	};
++		//};
+ 
+ 		port@1 {
+ 			usb2_role_switch: endpoint {
+-- 
+2.47.0
+

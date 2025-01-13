@@ -1,0 +1,293 @@
+From bc05308c5046849dfda23f3781e8d4ee4a8c24ac Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 5 Nov 2024 07:00:57 +0800
+Subject: [PATCH 35/35] dts: create the HDMI and LVDS dts
+
+---
+ .../qcs6490-addons-rb3gen2-video-mezz.dts     | 214 ++++++++++++++++--
+ .../qcs6490-addons-rb3gen2-vision-mezz.dts    |   2 +-
+ 2 files changed, 199 insertions(+), 17 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-video-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-video-mezz.dts
+index a0d227080de6..d0728c0ea33b 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-video-mezz.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-video-mezz.dts
+@@ -5,14 +5,21 @@
+ 
+ /dts-v1/;
+ 
++#define LVDS
+ #include "qcs6490-rb3gen2.dts"
+ #include "qcs6490-addons-rb3gen2.dtsi"
++
+ / {
+-	model = "Qualcomm Technologies, Inc. Robotics RB3gen2 addons video mezz platform";
+-	compatible = "qcom,qcs6490-addons-rb3gen2-video-mezz", "qcom,qcm6490";
++	model = "Advantech Technologies, Inc. ROM-2860 + ROM-ED92 + LVDS + DP";
++	compatible = "qcom,qcs6490-addons-rb3gen2-vision-mezz", "qcom,qcm6490";
+ 
+ 	qcom,msm-id = <497 0x10000>, <498 0x10000>, <475 0x10000>, <515 0x10000>;
+ 	qcom,board-id = <32 0x1>, <32 0x601>;
++
++	board {
++		compatible = "proc-board";
++		board-type = "ROM-2860 A1\n";
++	};
+ };
+ 
+ &q6apmbedai {
+@@ -21,24 +28,20 @@ &q6apmbedai {
+ 
+ &sound {
+ 	compatible = "qcom,qcm6490-sndcard";
+-	model = "qcm6490-rb3-vc-snd-card";
+-
+-	audio-routing =
+-		"SpkrLeft IN", "WSA_SPK1 OUT",
+-		"SpkrRight IN", "WSA_SPK2 OUT",
+-		"VA DMIC0", "vdd-micb",
+-		"VA DMIC1", "vdd-micb",
+-		"VA DMIC2", "vdd-micb",
+-		"VA DMIC3", "vdd-micb",
+-		"VA DMIC4", "vdd-micb",
+-		"VA DMIC5", "vdd-micb";
++	model = "qcm6490-rom2860-snd-card";
+ 
+ 	pinctrl-names = "default", "stub_aif1_active", "stub_aif1_sleep";
+ 	pinctrl-0 = <&mi2s0_data0_sleep>, <&mi2s0_data1_sleep>, <&mi2s0_mclk_sleep>,
+-		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>;
+-	pinctrl-1 = <&mi2s0_data0>, <&mi2s0_data1>, <&mi2s0_mclk>, <&mi2s0_sclk>, <&mi2s0_ws>;
++		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>,
++			<&mi2s3_data0_sleep>, <&mi2s3_data1_sleep>, <&mi2s3_sclk_sleep>, <&mi2s3_ws_sleep>,
++			<&mi2s1_data0_sleep> , <&mi2s1_sclk_sleep>, <&mi2s1_ws_sleep>;
++	pinctrl-1 = <&mi2s0_data0>, <&mi2s0_data1>, <&mi2s0_mclk>, <&mi2s0_sclk>, <&mi2s0_ws>,
++			<&mi2s3_data0>, <&mi2s3_data1>, <&mi2s3_sclk>, <&mi2s3_ws>,
++			<&mi2s1_data0> , <&mi2s1_sclk>, <&mi2s1_ws>;
+ 	pinctrl-2 = <&mi2s0_data0_sleep>, <&mi2s0_data1_sleep>, <&mi2s0_mclk_sleep>,
+-		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>;
++		    <&mi2s0_sclk_sleep>, <&mi2s0_ws_sleep>,
++			<&mi2s3_data0_sleep>, <&mi2s3_data1_sleep>, <&mi2s3_sclk_sleep>, <&mi2s3_ws_sleep>,
++			<&mi2s1_data0_sleep> , <&mi2s1_sclk_sleep>, <&mi2s1_ws_sleep>;
+ 
+ 	mi2s-capture-dai-link {
+ 		link-name = "MI2S-LPAIF-TX-PRIMARY";
+@@ -64,6 +67,54 @@ codec {
+ 		};
+ 	};
+ 
++	mi2s1-capture-dai-link {
++		link-name = "MI2S-LPAIF-TX-SECONDARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai SECONDARY_MI2S_TX>;
++		};
++
++		codec {
++			sound-dai = <&msm_stub_codec 1>;
++		};
++	};
++
++	mi2s1-playback-dai-link {
++		link-name = "MI2S-LPAIF-RX-SECONDARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai SECONDARY_MI2S_RX>;
++		};
++
++		codec {
++			sound-dai = <&msm_stub_codec 0>;
++		};
++	};
++
++	mi2s3-capture-dai-link {
++		link-name = "MI2S-LPAIF_RXTX-TX-PRIMARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai QUATERNARY_MI2S_TX>;
++		};
++
++		codec {
++			sound-dai = <&sgtl5000>;
++		};
++	};
++
++	mi2s3-playback-dai-link {
++		link-name = "MI2S-LPAIF_RXTX-RX-PRIMARY";
++
++		cpu {
++			sound-dai = <&q6apmbedai QUATERNARY_MI2S_RX>;
++		};
++
++		codec {
++			sound-dai = <&sgtl5000>;
++		};
++	};
++
+ 	tdm-capture-dai-link {
+ 		link-name = "TDM-LPAIF-TX-PRIMARY";
+ 
+@@ -90,6 +141,68 @@ codec {
+ 
+ };
+ 
++&lpass_tlmm {
++	mi2s3_sclk_sleep: mi2s3-sclk-sleep {
++		pins = "gpio0";
++		function = "qua_mi2s_sclk";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_ws_sleep: mi2s3-ws-sleep {
++		pins = "gpio1";
++		function = "qua_mi2s_ws";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_data0_sleep: mi2s3-data0-sleep {
++		pins = "gpio2";
++		function = "qua_mi2s_data";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s3_data1_sleep: mi2s3-data1-sleep {
++		pins = "gpio3";
++		function = "qua_mi2s_data";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++};
++
++&mi2s3_data0 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s3_data1 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s3_sclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s3_ws {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s1_mclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
+ &spmi_bus {
+ 	pmic@PM7250B_SID {
+ 		pm7250b_bcl: bcl@1d00 {
+@@ -279,6 +392,30 @@ mi2s0_ws_sleep: mi2s0-ws-sleep {
+ 		bias-pull-down;
+ 		input-enable;
+ 	};
++
++	mi2s1_data0_sleep: mi2s1-data0-sleep {
++		pins = "gpio107";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s1_sclk_sleep: mi2s1-sclk-sleep {
++		pins = "gpio106";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
++
++	mi2s1_ws_sleep: mi2s1-ws-sleep {
++		pins = "gpio108";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++		input-enable;
++	};
+ };
+ 
+ &mi2s0_data0 {
+@@ -308,3 +445,48 @@ &mi2s0_ws {
+ 	bias-disable;
+ 	output-high;
+ };
++
++&mi2s1_data0 {
++	drive-strength = <8>;
++	bias-disable;
++};
++
++&mi2s1_sclk {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&mi2s1_ws {
++	drive-strength = <8>;
++	bias-disable;
++	output-high;
++};
++
++&spmi_bus {
++	/delete-node/ pmic@PM7250B_SID;
++	/delete-node/ pmic@PM7250B_SID1;
++};
++
++&thermal_zones {
++	/delete-node/ pm7250b-ibat-lvl0;
++	/delete-node/ pm7250b-ibat-lvl1;
++	/delete-node/ pm7250b-bcl-lvl0;
++	/delete-node/ pm7250b-bcl-lvl1;
++	/delete-node/ pm7250b-bcl-lvl2;
++	/delete-node/ pm7250b-thermal;
++};
++
++&i2c3 {
++	status = "ok";
++	qcom,clk-freq-out = <100000>;
++	sgtl5000: codec@a {
++		compatible = "fsl,sgtl5000";
++		reg = <0x0a>;
++		clocks = <&q6prmcc LPASS_CLK_ID_MCLK_2 LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
++		#sound-dai-cells = <0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&mi2s1_mclk>;
++	};
++};
++
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+index 4d3cdbc50c40..f7a8d70a5c9a 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
+@@ -9,7 +9,7 @@
+ #include "qcs6490-addons-rb3gen2.dtsi"
+ 
+ / {
+-	model = "Qualcomm Technologies, Inc. Robotics RB3gen2 addons vision mezz platform Test123";
++	model = "Advantech Technologies, Inc. ROM-2860 + ROM-ED92 + HDMI + DP";
+ 	compatible = "qcom,qcs6490-addons-rb3gen2-vision-mezz", "qcom,qcm6490";
+ 
+ 	qcom,msm-id = <497 0x10000>, <498 0x10000>, <475 0x10000>, <515 0x10000>;
+-- 
+2.47.0
+

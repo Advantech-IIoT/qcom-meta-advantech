@@ -1,0 +1,42 @@
+From 31a70755e4b5bb89fac4e2984f045a89df35f996 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 29 Oct 2024 11:13:33 +0800
+Subject: [PATCH 32/35] add the rtl8211f phy led setting
+
+---
+ drivers/net/phy/realtek.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 337899c69738..93a42e104470 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -342,6 +342,16 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+ 			    CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER);
+ }
+ 
++static void rtl8211f_phy_fixup(struct phy_device *dev)
++{
++       msleep(200);
++       phy_write(dev, 0x1f, 0x0d04);
++       /*PHY LED OK*/
++       phy_write(dev, 0x10, 0xa050);
++       phy_write(dev, 0x11, 0x0000);
++       phy_write(dev, 0x1f, 0x0000);
++}
++
+ static int rtl8211f_config_init(struct phy_device *phydev)
+ {
+ 	struct rtl821x_priv *priv = phydev->priv;
+@@ -349,6 +359,8 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 	u16 val_txdly, val_rxdly;
+ 	int ret;
+ 
++	rtl8211f_phy_fixup(phydev);
++
+ 	ret = phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1,
+ 				       RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF,
+ 				       priv->phycr1);
+-- 
+2.47.0
+

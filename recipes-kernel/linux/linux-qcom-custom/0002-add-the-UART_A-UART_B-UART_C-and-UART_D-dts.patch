@@ -1,0 +1,185 @@
+From 7fe8992009712108e1e12a3d4891159ee0ef6cde Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Wed, 18 Sep 2024 16:58:28 +0800
+Subject: [PATCH 02/35] add the UART_A, UART_B, UART_C and UART_D dts
+
+---
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts | 90 ++++++++++++--------
+ 1 file changed, 55 insertions(+), 35 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index 0511098a3423..a588cbd767de 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -30,8 +30,10 @@ / {
+ 
+ 	aliases {
+ 		serial0 = &uart5;
+-		bluetooth0 = &bluetooth;
+-		serial1 = &uart7;
++		serial1 = &uart6;
++		serial2 = &uart10;
++		serial3 = &uart11;
++		serial4 = &uart13;
+ 	};
+ 
+ 	chosen {
+@@ -713,7 +715,7 @@ &qup_uart5_tx {
+ 	bias-disable;
+ };
+ 
+-&qup_uart7_cts {
++&qup_uart6_cts {
+ 	/*
+ 	 * Configure a bias-bus-hold on CTS to lower power
+ 	 * usage when Bluetooth is turned off. Bus hold will
+@@ -724,13 +726,13 @@ &qup_uart7_cts {
+ 	bias-bus-hold;
+ };
+ 
+-&qup_uart7_rts {
++&qup_uart6_rts {
+ 	/* We'll drive RTS, so no pull */
+ 	drive-strength = <2>;
+ 	bias-disable;
+ };
+ 
+-&qup_uart7_rx {
++&qup_uart6_rx {
+ 	/*
+ 	 * Configure a pull-up on RX. This is needed to avoid
+ 	 * garbage data when the TX pin of the Bluetooth module is
+@@ -740,7 +742,7 @@ &qup_uart7_rx {
+ 	bias-pull-up;
+ };
+ 
+-&qup_uart7_tx {
++&qup_uart6_tx {
+ 	/* We'll drive TX, so no pull */
+ 	drive-strength = <2>;
+ 	bias-disable;
+@@ -832,8 +834,8 @@ pcie1_wake_n: pcie1-wake-n-state {
+ 		bias-pull-up;
+ 	};
+ 
+-	qup_uart7_sleep_cts: qup-uart7-sleep-cts-state {
+-		pins = "gpio28";
++	qup_uart6_sleep_cts: qup-uart6-sleep-cts-state {
++		pins = "gpio24";
+ 		function = "gpio";
+ 		/*
+ 		 * Configure a bias-bus-hold on CTS to lower power
+@@ -845,8 +847,8 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts-state {
+ 		bias-bus-hold;
+ 	};
+ 
+-	qup_uart7_sleep_rts: qup-uart7-sleep-rts-state {
+-		pins = "gpio29";
++	qup_uart6_sleep_rts: qup-uart6-sleep-rts-state {
++		pins = "gpio25";
+ 		function = "gpio";
+ 		/*
+ 		 * Configure pull-down on RTS. As RTS is active low
+@@ -857,8 +859,8 @@ qup_uart7_sleep_rts: qup-uart7-sleep-rts-state {
+ 		bias-pull-down;
+ 	};
+ 
+-	qup_uart7_sleep_rx: qup-uart7-sleep-rx-state {
+-		pins = "gpio31";
++	qup_uart6_sleep_rx: qup-uart6-sleep-rx-state {
++		pins = "gpio26";
+ 		function = "gpio";
+ 		/*
+ 		 * Configure a pull-up on RX. This is needed to avoid
+@@ -868,8 +870,8 @@ qup_uart7_sleep_rx: qup-uart7-sleep-rx-state {
+ 		bias-pull-up;
+ 	};
+ 
+-	qup_uart7_sleep_tx: qup-uart7-sleep-tx-state {
+-		pins = "gpio30";
++	qup_uart6_sleep_tx: qup-uart6-sleep-tx-state {
++		pins = "gpio27";
+ 		function = "gpio";
+ 		/*
+ 		 * Configure pull-up on TX when it isn't actively driven
+@@ -883,6 +885,22 @@ sw_ctrl: sw-ctrl-state {
+ 		function = "gpio";
+ 		bias-pull-down;
+ 	};
++
++	uartb_mode0_default: uartb-mode0-default-state {
++		pins = "gpio53";
++		function = "gpio";
++		drive-strength = <2>;
++		output-high;
++		bias-pull-up;
++	};
++
++	uartb_mode1_default: uartb-mode1-default-state {
++		pins = "gpio52";
++		function = "gpio";
++		drive-strength = <2>;
++		output-low;
++		bias-pull-down;
++	};
+ };
+ 
+ &uart5 {
+@@ -890,31 +908,33 @@ &uart5 {
+ 	status = "okay";
+ };
+ 
+-&uart7 {
++&uart6 {
+ 	status = "okay";
+ 	/delete-property/interrupts;
+-	interrupts-extended = <&intc GIC_SPI 608 IRQ_TYPE_LEVEL_HIGH>,
+-				<&tlmm 31 IRQ_TYPE_EDGE_FALLING>;
++	interrupts-extended = <&intc GIC_SPI 607 IRQ_TYPE_LEVEL_HIGH>,
++				<&tlmm 27 IRQ_TYPE_EDGE_FALLING>;
+ 	pinctrl-names = "default", "sleep";
+-	pinctrl-1 = <&qup_uart7_sleep_cts>, <&qup_uart7_sleep_rts>,
+-			<&qup_uart7_sleep_tx>, <&qup_uart7_sleep_rx>;
++	pinctrl-1 = <&qup_uart6_sleep_cts>, <&qup_uart6_sleep_rts>,
++			<&qup_uart6_sleep_tx>, <&qup_uart6_sleep_rx>;
++};
+ 
+-	bluetooth: bluetooth {
+-		compatible = "qcom,wcn6750-bt";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&bt_en>, <&sw_ctrl>;
+-		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
+-		swctrl-gpios = <&tlmm 86 GPIO_ACTIVE_HIGH>;
+-		vddaon-supply = <&vreg_s7b_0p972>;
+-		vddbtcxmx-supply = <&vreg_s7b_0p972>;
+-		vddrfacmn-supply = <&vreg_s7b_0p972>;
+-		vddrfa0p8-supply = <&vreg_s7b_0p972>;
+-		vddrfa1p7-supply = <&vreg_s1b_1p872>;
+-		vddrfa1p2-supply = <&vreg_s8b_1p272>;
+-		vddrfa2p2-supply = <&vreg_s1c_2p19>;
+-		vddasd-supply = <&vreg_l11c_2p8>;
+-		max-speed = <3200000>;
+-	};
++&uart10 {
++	status = "okay";
++	/delete-property/pinctrl-0;
++	pinctrl-0 = <&qup_uart10_cts>, <&qup_uart10_rts>, <&qup_uart10_tx>, <&qup_uart10_rx>, <&uartb_mode0_default>, <&uartb_mode1_default>;
++	qcom,flow-control;
++};
++
++&uart11 {
++	status = "okay";
++	/delete-property/pinctrl-0;
++	pinctrl-0 = <&qup_uart11_tx>, <&qup_uart11_rx>;
++};
++
++&uart13 {
++	status = "okay";
++	/delete-property/pinctrl-0;
++	pinctrl-0 = <&qup_uart13_tx>, <&qup_uart13_rx>;
+ };
+ 
+ &ufs_mem_hc {
+-- 
+2.47.0
+

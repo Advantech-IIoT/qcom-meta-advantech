@@ -1,0 +1,41 @@
+From a97cef35ce0a68089e762f6afa82324ac27e7017 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 19 Sep 2024 10:02:22 +0800
+Subject: [PATCH 13/35] modify dts to support the ST M24C64 EEPROM
+
+---
+ arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+index 8f22b3ece575..d446551d99f4 100644
+--- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
++++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
+@@ -531,6 +531,11 @@ rtc0: rx8900@32 {
+ 		trickle-diode-disable;
+ 		status = "okay";
+ 	};
++
++	eeprom: 24c64@50 {
++		compatible = "atmel,24c64";
++		reg = <0x50>;
++	};
+ };
+ 
+ &ipa {
+@@ -1232,3 +1237,12 @@ spi@1 { /* chip select 1 */
+ 		status = "okay";
+ 	};
+ };
++
++&i2c9 {
++	status = "okay";
++
++	eeprom2: 24c64@57 {
++		compatible = "atmel,24c64";
++		reg = <0x57>;
++	};
++};
+-- 
+2.47.0
+
