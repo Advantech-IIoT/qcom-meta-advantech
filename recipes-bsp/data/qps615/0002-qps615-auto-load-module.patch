@@ -4,13 +4,13 @@ Date: Mon, 4 Nov 2024 17:43:54 +0800
 Subject: [PATCH 2/3] qps615: auto load module
 
 ---
- drivers/qps615/src/tc956x_pci.c | 1 +
+ tc956x_pci.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/qps615/src/tc956x_pci.c b/drivers/qps615/src/tc956x_pci.c
+diff --git a/tc956x_pci.c b/tc956x_pci.c
 index af65270..2d39523 100755
---- a/drivers/qps615/src/tc956x_pci.c
-+++ b/drivers/qps615/src/tc956x_pci.c
+--- a/tc956x_pci.c
++++ b/tc956x_pci.c
 @@ -4314,6 +4314,7 @@ static const struct pci_device_id tc956xmac_id_table[] = {
  #endif
  	{}
