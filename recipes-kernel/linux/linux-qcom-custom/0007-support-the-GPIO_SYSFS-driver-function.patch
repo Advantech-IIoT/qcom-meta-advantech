@@ -9,13 +9,13 @@ Subject: [PATCH 07/35] support the GPIO_SYSFS driver function
  2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/configs/qcom_addons.config b/arch/arm64/configs/qcom_addons.config
-index 2d3fb284306d..c92c273a279c 100644
+index 6397f70ec759..cb69895c35db 100644
 --- a/arch/arm64/configs/qcom_addons.config
 +++ b/arch/arm64/configs/qcom_addons.config
-@@ -44,3 +44,4 @@ CONFIG_SND_SOC_MSM_STUB=y
- CONFIG_STM_PROTO_OST=m
- CONFIG_USB_F_QDSS=m
+@@ -50,3 +50,4 @@ CONFIG_USB_F_QDSS=m
+ CONFIG_USB_HUB_USB5807=m
  CONFIG_VIRT_DRIVERS=y
+ CONFIG_SENSORS_EMC2305=y
 +CONFIG_GPIO_SYSFS=y
 diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
 index d56b835359d3..33bcbe1c1720 100644

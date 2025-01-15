@@ -11,10 +11,10 @@ Subject: [PATCH 25/35] configure the hdmi and sgtl5000 audio dts
  4 files changed, 205 insertions(+), 11 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/qcm6490.dtsi b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
-index c0711a1310a5..537c38510414 100644
+index d4ecb40fa1f4..e9f07ea72f69 100644
 --- a/arch/arm64/boot/dts/qcom/qcm6490.dtsi
 +++ b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
-@@ -245,6 +245,8 @@ &lpass_hm {
+@@ -239,6 +239,8 @@ &lpass_hm {
  &lpass_rx_macro {
  	/delete-property/ power-domains;
  	/delete-property/ power-domain-names;
@@ -23,7 +23,7 @@ index c0711a1310a5..537c38510414 100644
  	clocks = <&q6prmcc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
  		 <&q6prmcc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
  		 <&q6prmcc LPASS_CLK_ID_RX_CORE_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
-@@ -256,11 +258,10 @@ &lpass_rx_macro {
+@@ -250,11 +252,10 @@ &lpass_rx_macro {
  
  	qcom,rx_mclk_mode_muxsel = <0x033240D8>;
  
@@ -36,7 +36,7 @@ index c0711a1310a5..537c38510414 100644
  	clocks = <&q6prmcc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
  		 <&q6prmcc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
  	clock-names = "core", "audio";
-@@ -279,6 +280,8 @@ lpass_dmic45_data: dmic45-data-state {
+@@ -273,6 +274,8 @@ lpass_dmic45_data: dmic45-data-state {
  &lpass_tx_macro {
  	/delete-property/ power-domains;
  	/delete-property/ power-domain-names;
@@ -45,7 +45,7 @@ index c0711a1310a5..537c38510414 100644
  	clocks = <&q6prmcc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
  		 <&q6prmcc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
  		 <&q6prmcc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
-@@ -286,7 +289,7 @@ &lpass_tx_macro {
+@@ -280,7 +283,7 @@ &lpass_tx_macro {
  		 <&lpass_va_macro>;
  	clock-names = "mclk", "npl", "macro", "dcodec", "fsgen";
  
@@ -54,7 +54,7 @@ index c0711a1310a5..537c38510414 100644
  };
  
  &lpass_va_macro {
-@@ -302,7 +305,7 @@ &lpass_va_macro {
+@@ -296,7 +299,7 @@ &lpass_va_macro {
  		    <&lpass_dmic23_clk>, <&lpass_dmic23_data>,
  		    <&lpass_dmic45_clk>, <&lpass_dmic45_data>;
  
@@ -63,7 +63,7 @@ index c0711a1310a5..537c38510414 100644
  };
  
  &lpass_wsa_macro {
-@@ -315,7 +318,7 @@ &lpass_wsa_macro {
+@@ -309,7 +312,7 @@ &lpass_wsa_macro {
  		 <&lpass_va_macro>;
  	clock-names = "mclk", "npl", "macro", "dcodec", "fsgen";
  
@@ -73,10 +73,10 @@ index c0711a1310a5..537c38510414 100644
  
  &remoteproc_wpss {
 diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
-index 488bc6a5e209..c4da6044ed79 100644
+index 23801f7b7c45..0d2e0c1f2579 100644
 --- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
 +++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
-@@ -23,14 +23,20 @@ &q6apmbedai {
+@@ -26,14 +26,20 @@ &q6apmbedai {
  
  &sound {
  	compatible = "qcom,qcm6490-sndcard";
@@ -101,7 +101,7 @@ index 488bc6a5e209..c4da6044ed79 100644
  
  	mi2s-capture-dai-link {
  		link-name = "MI2S-LPAIF-TX-PRIMARY";
-@@ -56,6 +62,54 @@ codec {
+@@ -59,6 +65,54 @@ codec {
  		};
  	};
  
@@ -156,7 +156,7 @@ index 488bc6a5e209..c4da6044ed79 100644
  	tdm-capture-dai-link {
  		link-name = "TDM-LPAIF-TX-PRIMARY";
  
-@@ -82,6 +136,68 @@ codec {
+@@ -85,6 +139,68 @@ codec {
  
  };
  
@@ -225,7 +225,7 @@ index 488bc6a5e209..c4da6044ed79 100644
  &spmi_bus {
  	pmic@PM7250B_SID {
  		pm7250b_bcl: bcl@1d00 {
-@@ -271,6 +387,30 @@ mi2s0_ws_sleep: mi2s0-ws-sleep {
+@@ -274,6 +390,30 @@ mi2s0_ws_sleep: mi2s0-ws-sleep {
  		bias-pull-down;
  		input-enable;
  	};
@@ -255,8 +255,8 @@ index 488bc6a5e209..c4da6044ed79 100644
 +	};
  };
  
- &mi2s0_data0 {
-@@ -301,6 +441,23 @@ &mi2s0_ws {
+ &uart4 {
+@@ -308,6 +448,23 @@ &mi2s0_ws {
  	output-high;
  };
  
@@ -280,7 +280,7 @@ index 488bc6a5e209..c4da6044ed79 100644
  &spmi_bus {
  	/delete-node/ pmic@PM7250B_SID;
  	/delete-node/ pmic@PM7250B_SID1;
-@@ -314,3 +471,17 @@ &thermal_zones {
+@@ -321,3 +478,16 @@ &thermal_zones {
  	/delete-node/ pm7250b-bcl-lvl2;
  	/delete-node/ pm7250b-thermal;
  };
@@ -297,12 +297,11 @@ index 488bc6a5e209..c4da6044ed79 100644
 +		pinctrl-0 = <&mi2s1_mclk>;
 +	};
 +};
-+
 diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
-index 6c652c92f289..f2c2de1c7936 100644
+index 1cfc635822f2..bd808ae28565 100644
 --- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
 +++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
-@@ -110,8 +110,8 @@ sound: sound {
+@@ -112,8 +112,8 @@ sound: sound {
  		compatible = "qcom,qcm6490-sndcard";
  		model = "qcm6490-rb3-snd-card";
  
@@ -314,10 +313,10 @@ index 6c652c92f289..f2c2de1c7936 100644
  
  	thermal-zones {
 diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index ca3b4575d1c9..206e9b5ba4ec 100644
+index 053abaccf1aa..dc680c90e0e2 100644
 --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2825,6 +2825,26 @@ lpass_tlmm: pinctrl@33c0000 {
+@@ -2829,6 +2829,26 @@ lpass_tlmm: pinctrl@33c0000 {
  			#gpio-cells = <2>;
  			gpio-ranges = <&lpass_tlmm 0 0 15>;
  

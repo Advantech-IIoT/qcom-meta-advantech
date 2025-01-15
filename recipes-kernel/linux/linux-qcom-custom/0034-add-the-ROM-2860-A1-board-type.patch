@@ -8,10 +8,10 @@ Subject: [PATCH 34/35] add the ROM-2860 A1 board-type
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
-index c4da6044ed79..4d3cdbc50c40 100644
+index 694043c9a4e6..0b841ba28a8a 100644
 --- a/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
 +++ b/arch/arm64/boot/dts/qcom/qcs6490-addons-rb3gen2-vision-mezz.dts
-@@ -9,12 +9,16 @@
+@@ -9,12 +9,17 @@
  #include "qcs6490-addons-rb3gen2.dtsi"
  
  / {
@@ -26,9 +26,10 @@ index c4da6044ed79..4d3cdbc50c40 100644
 +		compatible = "proc-board";
 +		board-type = "ROM-2860 A1\n";
 +	};
- };
- 
- &q6apmbedai {
++
+ 	aliases {
+ 		serial2 = &uart4;
+ 	};
 -- 
 2.47.0
 

@@ -10,10 +10,10 @@ Subject: [PATCH 09/35] support the SPI1, SPI2 and SPI3 nor flash function
  3 files changed, 73 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/qcm6490.dtsi b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
-index dcc844d12f6f..01ebb4b63d20 100644
+index 61cfbac6618a..68d9d9faef59 100644
 --- a/arch/arm64/boot/dts/qcom/qcm6490.dtsi
 +++ b/arch/arm64/boot/dts/qcom/qcm6490.dtsi
-@@ -601,7 +601,7 @@ &swr2 {
+@@ -595,7 +595,7 @@ &swr2 {
  };
  
  &tlmm {
@@ -21,7 +21,7 @@ index dcc844d12f6f..01ebb4b63d20 100644
 +	gpio-reserved-ranges = <32 2>;
  };
  
- &venus {
+ &video_mem {
 diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
 index b6efa28551aa..031bfeac5a0c 100644
 --- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts

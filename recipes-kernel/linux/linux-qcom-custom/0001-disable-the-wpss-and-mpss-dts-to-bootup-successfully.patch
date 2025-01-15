@@ -8,10 +8,10 @@ Subject: [PATCH 01/35] disable the wpss and mpss dts to bootup successfully
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
-index 7e04209a04bf..0511098a3423 100644
+index 0faeb76f59aa..dc25436f95e8 100644
 --- a/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
 +++ b/arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dts
-@@ -774,12 +774,12 @@ &remoteproc_cdsp {
+@@ -787,12 +787,12 @@ &remoteproc_cdsp {
  
  &remoteproc_mpss {
  	firmware-name = "qcom/qcs6490/modem.mdt";
@@ -25,7 +25,8 @@ index 7e04209a04bf..0511098a3423 100644
 +	status = "disabled";
  };
  
- &swr2 {
+ &spi3 {
+
 -- 
 2.47.0
 

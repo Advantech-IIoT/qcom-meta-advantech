@@ -49,12 +49,12 @@ index b22ba95bd0c0..9d3b6dbd9325 100644
  	ret = clk_prepare_enable(sgtl5000->mclk);
  	if (ret) {
 diff --git a/sound/soc/qcom/qcm6490.c b/sound/soc/qcom/qcm6490.c
-index 78885df79b47..a5741e3f3332 100644
+index 187850424ce4..112fa8cbe91c 100644
 --- a/sound/soc/qcom/qcm6490.c
 +++ b/sound/soc/qcom/qcm6490.c
-@@ -24,6 +24,9 @@
- #define WCN_CDC_SLIM_RX_CH_MAX	2
+@@ -25,6 +25,9 @@
  #define WCN_CDC_SLIM_TX_CH_MAX	2
+ #define NAME_SIZE	32
  
 +#define DEFAULT_MCLK_RATE		12288000
 +#define SGTL5000_SYSCLK 0x00
@@ -62,7 +62,7 @@ index 78885df79b47..a5741e3f3332 100644
  struct qcm6490_snd_data {
  	bool stream_prepared[AFE_PORT_MAX];
  	struct snd_soc_card *card;
-@@ -45,23 +48,64 @@ static int qcm6490_slim_dai_init(struct snd_soc_pcm_runtime *rtd)
+@@ -49,6 +52,47 @@ static int qcm6490_slim_dai_init(struct snd_soc_pcm_runtime *rtd)
  	return ret;
  }
  
@@ -110,13 +110,14 @@ index 78885df79b47..a5741e3f3332 100644
  static int qcm6490_snd_init(struct snd_soc_pcm_runtime *rtd)
  {
  	struct qcm6490_snd_data *data = snd_soc_card_get_drvdata(rtd->card);
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
+@@ -62,17 +106,17 @@ static int qcm6490_snd_init(struct snd_soc_pcm_runtime *rtd)
+ 
  
  	switch (cpu_dai->id) {
 -	case TX_CODEC_DMA_TX_3:
--	case LPASS_CDC_DMA_TX3:
 -	case RX_CODEC_DMA_RX_0:
--		return qcom_snd_wcd_jack_setup(rtd, &data->jack, &data->jack_setup);
+-		ret = qcom_snd_wcd_jack_setup(rtd, &data->jack, &data->jack_setup);
+-		break;
  	case VA_CODEC_DMA_TX_0:
  	case WSA_CODEC_DMA_RX_0:
  	case WSA_CODEC_DMA_TX_0:
@@ -128,10 +129,10 @@ index 78885df79b47..a5741e3f3332 100644
  	case PRIMARY_TDM_TX_0:
 +	case QUATERNARY_MI2S_RX:
 +	case QUATERNARY_MI2S_TX:
- 		return 0;
+ 		break;
  	case SLIMBUS_0_RX:
  	case SLIMBUS_0_TX:
-@@ -131,6 +175,44 @@ static int qcm6490_snd_hw_free(struct snd_pcm_substream *substream)
+@@ -195,6 +239,44 @@ static int qcm6490_snd_hw_free(struct snd_pcm_substream *substream)
  				    &data->stream_prepared[cpu_dai->id]);
  }
  
@@ -176,7 +177,7 @@ index 78885df79b47..a5741e3f3332 100644
  static const struct snd_soc_dapm_widget qcm6490_dapm_widgets[] = {
  	SND_SOC_DAPM_HP("Headphone Jack", NULL),
  	SND_SOC_DAPM_MIC("Mic Jack", NULL),
-@@ -143,9 +225,11 @@ static const struct snd_soc_dapm_route qcm6490_dapm_routes[] = {
+@@ -292,9 +374,11 @@ static const struct snd_soc_dapm_route qcs9100_dapm_routes[] = {
  };
  
  static const struct snd_soc_ops qcm6490_be_ops = {
@@ -187,7 +188,7 @@ index 78885df79b47..a5741e3f3332 100644
 +	.shutdown = qcm6490_snd_shutdown,
  };
  
- static void qcm6490_add_be_ops(struct snd_soc_card *card)
+ static struct snd_soc_card qcm6490_data = {
 diff --git a/sound/soc/qcom/qdsp6/q6prm-clocks.c b/sound/soc/qcom/qdsp6/q6prm-clocks.c
 index 73b0cbac73d4..b5268c800d70 100644
 --- a/sound/soc/qcom/qdsp6/q6prm-clocks.c
