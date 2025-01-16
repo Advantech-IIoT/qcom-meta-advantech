@@ -1,0 +1,42 @@
+From ad40f388cb1faf6d55de9d59cd507ffecff74fb2 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Wed, 6 Nov 2024 14:33:35 +0800
+Subject: [PATCH 7/7] Add the qcm6490-display-rb3-lvds.dtso file
+
+---
+ display/qcm6490-display-rb3-lvds.dtso | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 display/qcm6490-display-rb3-lvds.dtso
+
+diff --git a/display/qcm6490-display-rb3-lvds.dtso b/display/qcm6490-display-rb3-lvds.dtso
+new file mode 100644
+index 0000000..554dd87
+--- /dev/null
++++ b/display/qcm6490-display-rb3-lvds.dtso
+@@ -0,0 +1,23 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/clock/qcom,gcc-sc7280.h>
++#include <dt-bindings/clock/qcom,dispcc-sc7280.h>
++#include <dt-bindings/interconnect/qcom,sc7280.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/power/qcom-rpmpd.h>
++#include <dt-bindings/clock/qcom,rpmh.h>
++
++#define LVDS
++#include "qcm6490-sde.dtsi"
++#include "qcm6490-sde-display-rb3gen2.dtsi"
++
++/ {
++	model = "Qualcomm Technologies, Inc. QCM6490 RB3 LVDS";
++	compatible = "qcom,qcm6490-rb3", "qcom,qcm6490";
++};
+-- 
+2.25.1
+

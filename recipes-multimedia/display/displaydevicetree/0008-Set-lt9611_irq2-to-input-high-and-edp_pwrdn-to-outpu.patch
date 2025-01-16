@@ -1,0 +1,73 @@
+From 527342c232ed4c644f7158367d692971f83fa5a4 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Tue, 26 Nov 2024 17:06:19 +0800
+Subject: [PATCH 8/8] Set lt9611_irq2 to input high and edp_pwrdn to output
+ high
+
+---
+ display/qcm6490-sde-display-rb3gen2.dtsi | 28 +++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 6 deletions(-)
+
+diff --git a/display/qcm6490-sde-display-rb3gen2.dtsi b/display/qcm6490-sde-display-rb3gen2.dtsi
+index c527e68..3a5acae 100644
+--- a/display/qcm6490-sde-display-rb3gen2.dtsi
++++ b/display/qcm6490-sde-display-rb3gen2.dtsi
+@@ -28,6 +28,14 @@
+ 		bias-disable;
+ 	};
+ 
++	lt9611_irq2_pin: lt9611-irq2 {
++                pins = "gpio101";
++                function = "gpio";
++                drive-strength = <8>;
++                input-enable;
++                bias-pull-up;
++        };
++
+ 	lt9611_rst_pin: lt9611-rst-state {
+ 		pins = "gpio103";
+ 		function = "gpio";
+@@ -52,7 +60,7 @@
+ 		vcc-supply = <&vreg_l11c_2p8>;
+ 
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&lt9611_irq_pin &lt9611_rst_pin>;
++		pinctrl-0 = <&lt9611_irq_pin &lt9611_irq2_pin &lt9611_rst_pin>;
+ 
+ 		ports {
+ 			#address-cells = <1>;
+@@ -132,11 +140,11 @@
+ 	vdda-0p9-supply = <&vreg_l10c_0p88>;
+ 	pinctrl-names = "mdss_dp_hpd_active", "mdss_dp_hpd_tlmm",
+ 			"mdss_dp_hpd_ctrl", "mdss_dp_active", "mdss_dp_sleep";
+-	pinctrl-0 = <&edp_hpd_ctrl>;
+-	pinctrl-1 = <&edp_hpd_ctrl>;
+-	pinctrl-2 = <&edp_hpd_ctrl>;
+-	pinctrl-3 = <&edp_hpd_ctrl>;
+-	pinctrl-4 = <&edp_hpd_ctrl>;
++	pinctrl-0 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
++	pinctrl-1 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
++	pinctrl-2 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
++	pinctrl-3 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
++	pinctrl-4 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
+ 	qcom,dp-hpd-gpio = <&tlmm 60 0>;
+ 	qcom,dp-gpio-aux-switch;
+ 	qcom,edp-vcc-en-gpio = <&tlmm 80 0>;
+@@ -160,6 +168,14 @@
+ 			drive-strength = <2>;
+ 		};
+ 	};
++
++	edp_pwrdn_pin: edp-pwrdn-pin-state {
++                pins = "gpio104";
++                function = "gpio";
++                drive-strength = <2>;
++                output-high;
++                bias-pull-down;
++        };
+ };
+ 
+ &mdss_mdp0 {
+-- 
+2.25.1
+

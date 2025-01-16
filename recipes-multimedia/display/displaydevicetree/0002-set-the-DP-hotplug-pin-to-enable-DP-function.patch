@@ -1,0 +1,27 @@
+From c66dfffa6a17194997d64bb2c6178ab7865911aa Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Fri, 10 May 2024 14:48:02 +0800
+Subject: [PATCH 2/6] set the DP hotplug pin to enable DP function
+
+qcom,dp-hpd-gpio = <&tlmm 39 0>;
+
+%% original patch: 0002-set-the-DP-hotplug-pin-to-enable-DP-function.patch
+---
+ display/qcm6490-sde-display-rb3gen2.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/display/qcm6490-sde-display-rb3gen2.dtsi b/display/qcm6490-sde-display-rb3gen2.dtsi
+index 3959c18..b4aef2f 100644
+--- a/display/qcm6490-sde-display-rb3gen2.dtsi
++++ b/display/qcm6490-sde-display-rb3gen2.dtsi
+@@ -17,6 +17,7 @@
+ 	qcom,dp-aux-switch = <&redriver>;
+ 	vdda-1p2-supply = <&vreg_l6b_1p2>;
+ 	vdda-0p9-supply = <&vreg_l1b_0p912>;
++	qcom,dp-hpd-gpio = <&tlmm 39 0>;
+ };
+ 
+ &tlmm {
+-- 
+2.25.1
+

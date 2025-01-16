@@ -1,0 +1,26 @@
+From 9a9924fe1a837b835703f55952e97a96a82042df Mon Sep 17 00:00:00 2001
+From: Mantis Hsiang <quic_mantish@quicinc.com>
+Date: Fri, 20 Sep 2024 19:21:03 +0800
+Subject: [PATCH 3/6] remove pmic glink
+
+%% original patch: 0003-remove-pmic-glink.patch
+---
+ display/qcm6490-sde.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/display/qcm6490-sde.dtsi b/display/qcm6490-sde.dtsi
+index 27461c3..6d7ec83 100644
+--- a/display/qcm6490-sde.dtsi
++++ b/display/qcm6490-sde.dtsi
+@@ -425,7 +425,7 @@
+ 	mdss_dp0: qcom,dp_display@ae90000 {
+ 		cell-index = <0>;
+ 		compatible = "qcom,dp-display";
+-		qcom,altmode-dev = <&pmic_glink>;
++		//qcom,altmode-dev = <&pmic_glink>;
+ 
+ 		reg =   <0 0xae90000 0 0x0fc>,
+ 			<0 0xae90200 0 0x0c0>,
+-- 
+2.25.1
+

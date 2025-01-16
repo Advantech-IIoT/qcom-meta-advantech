@@ -1,0 +1,74 @@
+From 814a6071d0138fec001d582b0578a94d4c65d974 Mon Sep 17 00:00:00 2001
+From: Darren Huang <darren.huang@advantech.com.tw>
+Date: Thu, 7 Nov 2024 12:01:12 +0800
+Subject: [PATCH 5/7] compile the DSI or eDP conditionally
+
+---
+ display/qcm6490-sde-display-rb3gen2.dtsi | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/display/qcm6490-sde-display-rb3gen2.dtsi b/display/qcm6490-sde-display-rb3gen2.dtsi
+index 70acf50..c527e68 100644
+--- a/display/qcm6490-sde-display-rb3gen2.dtsi
++++ b/display/qcm6490-sde-display-rb3gen2.dtsi
+@@ -70,7 +70,11 @@
+ };
+ 
+ &sde_dsi {
++#ifdef LVDS
+ 	status = "disabled";
++#else
++	status = "ok";
++#endif
+ 	/delete-property/ lab-supply;
+ 	/delete-property/ ibb-supply;
+ 
+@@ -92,7 +96,11 @@
+ };
+ 
+ &mdss_dsi_phy0 {
++#ifdef LVDS
+ 	status = "disabled";
++#else
++	status = "ok";
++#endif
+ 	/delete-property/ qcom,dsi-pll-ssc-en;
+ 	/delete-property/ qcom,dsi-pll-ssc-mode;
+ 
+@@ -100,7 +108,11 @@
+ };
+ 
+ &mdss_dsi0 {
++#ifdef LVDS
+ 	status = "disabled";
++#else
++	status = "ok";
++#endif
+ 	reg = <0 0xae94000 0 0x400>,
+ 		<0 0xaf08000 0 0x4>,
+ 		<0 0x0ae36000 0 0x300>,
+@@ -109,7 +121,11 @@
+ };
+ 
+ &mdss_edp0 {
++#ifdef LVDS
+ 	status = "ok";
++#else
++	status = "disabled";
++#endif
+ 	qcom,display-type = "primary";
+ 	qcom,dp-low-power-hw-hpd;
+ 	vdda-1p2-supply = <&vreg_l6b_1p2>;
+@@ -147,5 +163,9 @@
+ };
+ 
+ &mdss_mdp0 {
++#ifdef LVDS
+ 	connectors = <&smmu_sde_unsec &mdss_edp0 &mdss_dp0>;
++#else
++	connectors = <&smmu_sde_unsec &sde_dsi &mdss_dp0>;
++#endif
+ };
+-- 
+2.25.1
+

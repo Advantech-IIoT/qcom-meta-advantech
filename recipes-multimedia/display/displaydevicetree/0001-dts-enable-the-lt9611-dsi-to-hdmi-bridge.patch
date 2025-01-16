@@ -1,0 +1,78 @@
+From 53c2f4364538c38ad755a9b44714a9120731377c Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Fri, 13 Sep 2024 09:17:10 +0800
+Subject: [PATCH 1/6] dts: enable the lt9611 dsi to hdmi bridge.
+
+1. change the i2c bus from i2c0 to i2c3
+2. change the irq pin form tlmm gpio24 to tlmm gpio102
+3. change the reset pin form pm7250b gpio2 to tlmm gpio103
+4. support the 4K@30, 1080P@60, 720P@60 and 480P@60
+
+echo 3840 2160 30 > /sys/bus/i2c/drivers/lt9611uxc/3-002b/edid_mode
+echo 1920 1080 60 > /sys/bus/i2c/drivers/lt9611uxc/3-002b/edid_mode
+echo 1280 720 60 > /sys/bus/i2c/drivers/lt9611uxc/3-002b/edid_mode
+echo 720 480 60  > /sys/bus/i2c/drivers/lt9611uxc/3-002b/edid_mode
+
+systemctl restart init_display.service
+
+%% original patch: 0001-enable-the-lt9611-dsi-to-hdmi-bridge.patch
+---
+ display/qcm6490-sde-display-rb3gen2.dtsi | 27 +++++++++++-------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/display/qcm6490-sde-display-rb3gen2.dtsi b/display/qcm6490-sde-display-rb3gen2.dtsi
+index f898866..3959c18 100644
+--- a/display/qcm6490-sde-display-rb3gen2.dtsi
++++ b/display/qcm6490-sde-display-rb3gen2.dtsi
+@@ -19,27 +19,24 @@
+ 	vdda-0p9-supply = <&vreg_l1b_0p912>;
+ };
+ 
+-&pm7250b_gpios {
+-	lt9611_rst_pin: lt9611-rst-state {
+-		pins = "gpio2";
+-		function = "normal";
+-
+-		output-high;
+-		input-disable;
+-		power-source = <0>;
+-	};
+-};
+-
+ &tlmm {
+ 	lt9611_irq_pin: lt9611-irq {
+-		pins = "gpio24";
++		pins = "gpio102";
+ 		function = "gpio";
+ 		drive-strength = <8>;
+ 		bias-disable;
+ 	};
++
++	lt9611_rst_pin: lt9611-rst-state {
++		pins = "gpio103";
++		function = "gpio";
++		drive-strength = <2>;
++		output-high;
++		bias-pull-down;
++	};
+ };
+ 
+-&i2c0 {
++&i2c3 {
+ 	status = "ok";
+ 	qcom,clk-freq-out = <100000>;
+ 
+@@ -47,8 +44,8 @@
+ 		compatible = "lt,lt9611uxc";
+ 		reg = <0x2b>;
+ 
+-		interrupts-extended = <&tlmm 24 IRQ_TYPE_EDGE_FALLING>;
+-		reset-gpios = <&pm7250b_gpios 2 0>;
++		interrupts-extended = <&tlmm 102 IRQ_TYPE_EDGE_FALLING>;
++		reset-gpios = <&tlmm 103 0>;
+ 		lt,preferred-mode = "1920x1080";
+ 
+ 		vcc-supply = <&vreg_l11c_2p8>;
+-- 
+2.25.1
+

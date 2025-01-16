@@ -1,0 +1,102 @@
+From 376d8687bee15eb567c512bdcfdf4604407d4b77 Mon Sep 17 00:00:00 2001
+From: Mantis Hsiang <quic_mantish@quicinc.com>
+Date: Fri, 1 Nov 2024 22:27:40 +0800
+Subject: [PATCH] set qcom,nativedp-orientation <1>, <1> to force native dp and
+ reverse side
+
+---
+ msm/dp/dp_ctrl.c    |  9 ++++++++-
+ msm/dp/dp_display.c |  9 +++++++--
+ msm/dp/dp_parser.c  | 13 +++++++++++++
+ msm/dp/dp_parser.h  |  1 +
+ 4 files changed, 29 insertions(+), 3 deletions(-)
+
+diff --git a/msm/dp/dp_ctrl.c b/msm/dp/dp_ctrl.c
+index ae023255..9f296ff5 100644
+--- a/msm/dp/dp_ctrl.c
++++ b/msm/dp/dp_ctrl.c
+@@ -886,10 +886,17 @@ static int dp_ctrl_host_init(struct dp_ctrl *dp_ctrl, bool flip, bool reset)
+ 	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+ 
+ 	ctrl->orientation = flip;
++	if (ctrl->parser->dp_orientation[0]) {
++		ctrl->orientation = ctrl->parser->dp_orientation[1];
++	}
++
+ 	catalog = ctrl->catalog;
+ 
+ 	if (reset) {
+-		catalog->usb_reset(ctrl->catalog, flip);
++		if (!ctrl->parser->dp_orientation[0])
++		{
++			catalog->usb_reset(ctrl->catalog, flip);
++		}
+ 		catalog->phy_reset(ctrl->catalog);
+ 	}
+ 	catalog->enable_irq(ctrl->catalog, true);
+diff --git a/msm/dp/dp_display.c b/msm/dp/dp_display.c
+index 12197ba7..ba97efe4 100644
+--- a/msm/dp/dp_display.c
++++ b/msm/dp/dp_display.c
+@@ -1359,8 +1359,13 @@ static int dp_display_process_hpd_high(struct dp_display_private *dp)
+ 	if (!dp->dp_display.base_connector)
+ 		goto err_unready;
+ 
+-	rc = dp->panel->read_sink_caps(dp->panel,
+-			dp->dp_display.base_connector, dp->hpd->multi_func);
++	if (!dp->parser->dp_orientation[0]) {
++		rc = dp->panel->read_sink_caps(dp->panel,
++				dp->dp_display.base_connector, dp->hpd->multi_func);
++	} else {
++		rc = dp->panel->read_sink_caps(dp->panel,
++				dp->dp_display.base_connector, 1);
++	}
+ 	/*
+ 	 * ETIMEDOUT --> cable may have been removed
+ 	 * ENOTCONN --> no downstream device connected
+diff --git a/msm/dp/dp_parser.c b/msm/dp/dp_parser.c
+index 3fb08a24..76ca49e7 100644
+--- a/msm/dp/dp_parser.c
++++ b/msm/dp/dp_parser.c
+@@ -896,6 +896,18 @@ end:
+ 	return;
+ }
+ 
++
++static void dp_parser_typec_orientation(struct dp_parser *parser)
++{
++	struct device *dev = &parser->pdev->dev;
++	int ret;
++
++	ret = of_property_read_u8_array(dev->of_node, "qcom,nativedp-orientation",
++			parser->dp_orientation, 2);
++
++	return;
++}
++
+ static int dp_parser_parse(struct dp_parser *parser)
+ {
+ 	int rc = 0;
+@@ -951,6 +963,7 @@ static int dp_parser_parse(struct dp_parser *parser)
+ 	dp_parser_widebus(parser);
+ 	dp_parser_qos(parser);
+ 	dp_parser_link_training_params(parser);
++	dp_parser_typec_orientation(parser);
+ err:
+ 	return rc;
+ }
+diff --git a/msm/dp/dp_parser.h b/msm/dp/dp_parser.h
+index 20331924..ac2ffc54 100644
+--- a/msm/dp/dp_parser.h
++++ b/msm/dp/dp_parser.h
+@@ -296,6 +296,7 @@ struct dp_parser {
+ 	struct dp_io_data *(*get_io)(struct dp_parser *parser, char *name);
+ 	void (*get_io_buf)(struct dp_parser *parser, char *name);
+ 	void (*clear_io_buf)(struct dp_parser *parser);
++	u8 dp_orientation[2];
+ };
+ 
+ enum dp_phy_lane_num {
+-- 
+2.25.1
+

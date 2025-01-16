@@ -1,0 +1,25 @@
+From a9443d88c74febef090338d9f6fb610e86784e1d Mon Sep 17 00:00:00 2001
+From: Mantis Hsiang <quic_mantish@quicinc.com>
+Date: Mon, 21 Oct 2024 17:52:22 +0800
+Subject: [PATCH 6/6] add device tree property qcom,nativedp-orientation to
+ force nativedp and orientation
+
+---
+ display/qcm6490-sde.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/display/qcm6490-sde.dtsi b/display/qcm6490-sde.dtsi
+index fc0db68..bad88ec 100644
+--- a/display/qcm6490-sde.dtsi
++++ b/display/qcm6490-sde.dtsi
+@@ -463,6 +463,7 @@
+ 			"pixel_clk_rcg", "pixel_parent", "strm0_pixel_clk";
+ 
+ 		qcom,phy-version = <0x420>;
++		qcom,nativedp-orientation = /bits/ 8 <0x01 0x01>;
+ 		qcom,aux-cfg0-settings = [20 00];
+ 		qcom,aux-cfg1-settings = [24 13];
+ 		qcom,aux-cfg2-settings = [28 A4];
+-- 
+2.25.1
+
