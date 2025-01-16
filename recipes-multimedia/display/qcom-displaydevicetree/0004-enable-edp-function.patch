@@ -61,18 +61,6 @@ index b4aef2f..70acf50 100644
 -	connectors = <&smmu_sde_unsec &sde_dsi &mdss_dp0>;
 +	connectors = <&smmu_sde_unsec &mdss_edp0 &mdss_dp0>;
  };
-diff --git a/display/qcm6490-sde.dtsi b/display/qcm6490-sde.dtsi
-index 6d7ec83..fc0db68 100644
---- a/display/qcm6490-sde.dtsi
-+++ b/display/qcm6490-sde.dtsi
-@@ -353,7 +353,6 @@
- 		qcom,max-pclk-frequency-khz = <675000>;
- 		qcom,display-type = "primary";
- 
--		qcom,widebus-enable;
- 		qcom,ssc-feature-enable;
- 		qcom,dsc-feature-enable;
- 		qcom,fec-feature-enable;
 -- 
 2.25.1
 

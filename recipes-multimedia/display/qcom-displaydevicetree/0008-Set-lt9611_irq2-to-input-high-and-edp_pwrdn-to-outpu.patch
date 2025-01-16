@@ -36,20 +36,16 @@ index c527e68..3a5acae 100644
  
  		ports {
  			#address-cells = <1>;
-@@ -132,11 +140,11 @@
+@@ -139,9 +139,9 @@
+ 	vdda-1p2-supply = <&vreg_l6b_1p2>;
  	vdda-0p9-supply = <&vreg_l10c_0p88>;
- 	pinctrl-names = "mdss_dp_hpd_active", "mdss_dp_hpd_tlmm",
- 			"mdss_dp_hpd_ctrl", "mdss_dp_active", "mdss_dp_sleep";
+ 	pinctrl-names = "mdss_dp_active", "mdss_dp_sleep", "mdss_dp_hpd_active";
 -	pinctrl-0 = <&edp_hpd_ctrl>;
--	pinctrl-1 = <&edp_hpd_ctrl>;
--	pinctrl-2 = <&edp_hpd_ctrl>;
--	pinctrl-3 = <&edp_hpd_ctrl>;
--	pinctrl-4 = <&edp_hpd_ctrl>;
+-	pinctrl-1 = <&edp_hpd_default>;
+-	pinctrl-2 = <&edp_hpd_default>;
 +	pinctrl-0 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
-+	pinctrl-1 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
-+	pinctrl-2 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
-+	pinctrl-3 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
-+	pinctrl-4 = <&edp_hpd_ctrl &edp_pwrdn_pin>;
++	pinctrl-1 = <&edp_hpd_default &edp_pwrdn_pin>;
++	pinctrl-2 = <&edp_hpd_default &edp_pwrdn_pin>;
  	qcom,dp-hpd-gpio = <&tlmm 60 0>;
  	qcom,dp-gpio-aux-switch;
  	qcom,edp-vcc-en-gpio = <&tlmm 80 0>;
