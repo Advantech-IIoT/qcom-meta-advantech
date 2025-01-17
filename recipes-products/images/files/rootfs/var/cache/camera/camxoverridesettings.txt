@@ -1,0 +1,1 @@
+multiCameraLogicalXMLFile=kodiak_dc.xml

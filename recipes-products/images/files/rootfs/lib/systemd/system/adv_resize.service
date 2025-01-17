@@ -1,0 +1,12 @@
+[Unit]
+Description=ADV Resize
+ 
+[Service]
+Type=idle
+TimeoutStartSec=60
+ExecStartPre=/bin/sleep 10
+ExecStart=/tools/adv_resize.sh
+StandardOutput=kmsg+console
+ 
+[Install]
+WantedBy=multi-user.target
